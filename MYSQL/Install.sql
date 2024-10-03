@@ -18,6 +18,12 @@ CREATE TABLE ParkingSpots (
     status ENUM('Available', 'Reserved', 'Occupied') NOT NULL DEFAULT 'Available'
 );
 
+-- Insert 15 available parking spots
+INSERT INTO ParkingSpots (status) VALUES
+('Available'), ('Available'), ('Available'), ('Available'), ('Available'),
+('Available'), ('Available'), ('Available'), ('Available'), ('Available'),
+('Available'), ('Available'), ('Available'), ('Available'), ('Available');
+
 -- Create Reservations table with status field
 CREATE TABLE Reservations (
     reservationID INT AUTO_INCREMENT PRIMARY KEY,
@@ -29,5 +35,3 @@ CREATE TABLE Reservations (
     FOREIGN KEY (userID) REFERENCES Users(userID),
     FOREIGN KEY (spotID) REFERENCES ParkingSpots(spotID)
 );
-
-
