@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
-from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
-from datetime import datetime
+from models import db, Users, ParkingSpots, Reservations
+from datetime import datetime, timedelta
 
 app = Flask(__name__)
 CORS(app)
@@ -10,46 +10,10 @@ CORS(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:Tanner1121@localhost/ParkingLotDB'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-db = SQLAlchemy(app)
+db.init_app(app)
 
-# Define the Users model
-class Users(db.Model):
-    __tablename__ = 'Users'
-    userID = db.Column(db.Integer, primary_key=True)
-    firstName = db.Column(db.String(50), nullable=False)
-    lastName = db.Column(db.String(50), nullable=False)
-    mNumber = db.Column(db.String(8), nullable=False, unique=True)
-
-    def __init__(self, firstName, lastName, mNumber):
-        self.firstName = firstName
-        self.lastName = lastName
-        self.mNumber = mNumber
-
-# Define the ParkingSpots model
-class ParkingSpots(db.Model):
-    __tablename__ = 'ParkingSpots'
-    spotID = db.Column(db.Integer, primary_key=True)
-    status = db.Column(db.Enum('Available', 'Reserved', 'Occupied'), nullable=False, default='Available')
-
-    def __init__(self, status='Available'):
-        self.status = status
-
-# Define the Reservations model
-class Reservations(db.Model):
-    __tablename__ = 'Reservations'
-    reservationID = db.Column(db.Integer, primary_key=True)
-    userID = db.Column(db.Integer, db.ForeignKey('Users.userID'), nullable=False)
-    spotID = db.Column(db.Integer, db.ForeignKey('ParkingSpots.spotID'), nullable=False)
-    startTime = db.Column(db.DateTime, nullable=False)
-    endTime = db.Column(db.DateTime, nullable=False)
-    status = db.Column(db.Enum('Active', 'Canceled', 'Expired'), nullable=False, default='Active')
-
-    def __init__(self, userID, spotID, startTime, endTime, status='Active'):
-        self.userID = userID
-        self.spotID = spotID
-        self.startTime = startTime
-        self.endTime = endTime
-        self.status = status
+with app.app_context():
+    db.create_all()
 
 # Route to add a new user
 @app.route('/add_user', methods=['POST'])
@@ -87,17 +51,71 @@ def get_users():
         })
     return jsonify(users_list), 200
 
-# Route to get all parking spots
+# Route to get all parking spots with fullness status
 @app.route('/parking_spots', methods=['GET'])
 def get_parking_spots():
     spots = ParkingSpots.query.all()
     spots_list = []
+    now = datetime.now()
+
+    # Calculate the number of active reservations per spot
     for spot in spots:
+        active_reservations = Reservations.query.filter(
+            Reservations.spotID == spot.spotID,
+            Reservations.status == 'Active',
+            Reservations.endTime > now
+        ).count()
+
+        # Determine the status based on the number of active reservations
+        # For simplicity, we'll assume a maximum of 4 reservations per spot per day
+        if active_reservations == 0:
+            status = 'NoReservations'
+        elif active_reservations == 1:
+            status = 'QuarterReserved'
+        elif active_reservations == 2:
+            status = 'HalfReserved'
+        elif active_reservations == 3:
+            status = 'ThreeFourthsReserved'
+        else:
+            status = 'FullyReserved'
+
         spots_list.append({
             'spotID': spot.spotID,
-            'status': spot.status
+            'status': status
         })
+
     return jsonify(spots_list), 200
+
+# Route to get unavailable times for a spot
+@app.route('/available_times/<int:spotID>', methods=['GET'])
+def get_available_times(spotID):
+    date_str = request.args.get('date')
+    if not date_str:
+        return jsonify({'message': 'Date parameter is required'}), 400
+
+    try:
+        date = datetime.strptime(date_str, '%Y-%m-%d').date()
+    except ValueError:
+        return jsonify({'message': 'Invalid date format'}), 400
+
+    # Fetch all reservations for the spot on that date
+    reservations = Reservations.query.filter(
+        Reservations.spotID == spotID,
+        Reservations.status == 'Active',
+        db.func.date(Reservations.startTime) == date
+    ).all()
+
+    # Build a list of unavailable time slots
+    unavailable_slots = []
+    for res in reservations:
+        unavailable_slots.append({
+            'startTime': res.startTime.strftime('%H:%M'),
+            'endTime': res.endTime.strftime('%H:%M')
+        })
+
+    return jsonify({
+        'unavailableSlots': unavailable_slots
+    }), 200
 
 # Route to create a new reservation
 @app.route('/reserve_spot', methods=['POST'])
@@ -131,10 +149,16 @@ def reserve_spot():
     if duration > 8:
         return jsonify({'message': 'Reservation cannot exceed 8 hours'}), 400
 
-    # Check if the spot is available
-    spot = ParkingSpots.query.filter_by(spotID=spotID).first()
-    if not spot or spot.status != 'Available':
-        return jsonify({'message': 'Spot not available'}), 400
+    # Check for overlapping reservations
+    overlapping_reservations = Reservations.query.filter(
+        Reservations.spotID == spotID,
+        Reservations.status == 'Active',
+        Reservations.endTime > startTime,
+        Reservations.startTime < endTime
+    ).first()
+
+    if overlapping_reservations:
+        return jsonify({'message': 'Spot is already reserved during this time'}), 400
 
     # Create a new reservation
     new_reservation = Reservations(
@@ -145,9 +169,6 @@ def reserve_spot():
         status='Active'
     )
     db.session.add(new_reservation)
-
-    # Update the parking spot status to 'Reserved'
-    spot.status = 'Reserved'
     db.session.commit()
 
     return jsonify({'message': 'Spot reserved successfully'}), 200
