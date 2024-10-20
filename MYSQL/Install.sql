@@ -7,7 +7,8 @@ CREATE TABLE IF NOT EXISTS Users (
     userID INT AUTO_INCREMENT PRIMARY KEY,
     firstName VARCHAR(50) NOT NULL,
     lastName VARCHAR(50) NOT NULL,
-    mNumber CHAR(8) NOT NULL UNIQUE
+    mNumber CHAR(8) NOT NULL UNIQUE,
+    password VARCHAR(250) NOT NULL
 );
 
 -- Create ParkingSpots table
