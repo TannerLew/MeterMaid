@@ -8,12 +8,14 @@ class Users(db.Model):
     userID = db.Column(db.Integer, primary_key=True)
     firstName = db.Column(db.String(50), nullable=False)
     lastName = db.Column(db.String(50), nullable=False)
+    password = db.Column(db.String(250), nullable=False)
     mNumber = db.Column(db.String(8), nullable=False, unique=True)
 
-    def __init__(self, firstName, lastName, mNumber):
+    def __init__(self, firstName, lastName, mNumber, password):
         self.firstName = firstName
         self.lastName = lastName
         self.mNumber = mNumber
+        self.password = password
 
 # Define the ParkingSpots model
 class ParkingSpots(db.Model):
