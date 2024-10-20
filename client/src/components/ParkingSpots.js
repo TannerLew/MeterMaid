@@ -1,47 +1,39 @@
+// ParkingSpots.js
+
 import React from "react";
+import "./ParkingSpots.css"; // Import the CSS file
 
 function ParkingSpots({ parkingSpots, handleSpotClick }) {
-  const getColor = (status) => {
+  const getStatusLabel = (status) => {
     switch (status) {
       case "NoReservations":
-        return "green";
+        return "Available";
       case "QuarterReserved":
-        return "yellow";
+        return "25% Reserved";
       case "HalfReserved":
-        return "orange";
+        return "50% Reserved";
       case "ThreeFourthsReserved":
-        return "orangered";
+        return "75% Reserved";
       case "FullyReserved":
-        return "red";
+        return "Fully Reserved";
       default:
-        return "gray";
+        return "Unknown";
     }
   };
 
   return (
-    <div>
+    <div className="parking-container">
       <h2>Parking Spots</h2>
-      <div style={{ display: "flex", flexWrap: "wrap" }}>
+      <div className="parking-grid">
         {parkingSpots.map((spot) => (
           <div
             key={spot.spotID}
             onClick={() => handleSpotClick(spot)}
-            style={{
-              width: "100px",
-              height: "100px",
-              margin: "10px",
-              backgroundColor: getColor(spot.status),
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              color: "white",
-              cursor: "pointer",
-              textAlign: "center",
-            }}
+            className={`parking-spot ${spot.status.toLowerCase()}`}
           >
             <div>
-              <div>{`Spot ${spot.spotID}`}</div>
-              <div>{spot.status}</div>
+              <div className="spot-id">{`Spot ${spot.spotID}`}</div>
+              <div className="spot-status">{getStatusLabel(spot.status)}</div>
             </div>
           </div>
         ))}

@@ -1,9 +1,13 @@
-import React, { useState } from "react";
+// UserForm.js
 
-function UserForm({ fetchUsers }) {
+import React, { useState } from "react";
+import "./UserForm.css";  // Import the CSS file
+
+function UserForm() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [mNumber, setMNumber] = useState("");
+  const [password, setPassword] = useState("");
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -12,6 +16,7 @@ function UserForm({ fetchUsers }) {
       firstName,
       lastName,
       mNumber,
+      password,
     };
 
     fetch("http://localhost:5000/add_user", {
@@ -28,10 +33,11 @@ function UserForm({ fetchUsers }) {
           setFirstName("");
           setLastName("");
           setMNumber("");
-          // Refresh the users list
-          fetchUsers();
+          setPassword("");
         } else {
-          alert("Failed to add user");
+          response.json().then((data) => {
+            alert(data.message || "Failed to add user");
+          });
         }
       })
       .catch((error) => {
@@ -41,41 +47,54 @@ function UserForm({ fetchUsers }) {
   };
 
   return (
-    <div>
-      <h1>Add User</h1>
-      <form onSubmit={handleSubmit}>
-        {/* Form fields */}
-        <label>
-          First Name:
+    <div className="register-container">
+      <h1>Register User</h1>
+      <form onSubmit={handleSubmit} className="register-form">
+        <div className="form-group">
+          <label htmlFor="firstName">First Name:</label>
           <input
             type="text"
+            id="firstName"
             value={firstName}
             onChange={(e) => setFirstName(e.target.value)}
             required
+            placeholder="Enter your first name"
           />
-        </label>
-        <br />
-        <label>
-          Last Name:
+        </div>
+        <div className="form-group">
+          <label htmlFor="lastName">Last Name:</label>
           <input
             type="text"
+            id="lastName"
             value={lastName}
             onChange={(e) => setLastName(e.target.value)}
             required
+            placeholder="Enter your last name"
           />
-        </label>
-        <br />
-        <label>
-          M Number:
+        </div>
+        <div className="form-group">
+          <label htmlFor="mNumber">M Number:</label>
           <input
             type="text"
+            id="mNumber"
             value={mNumber}
             onChange={(e) => setMNumber(e.target.value)}
             required
+            placeholder="Enter your M Number"
           />
-        </label>
-        <br />
-        <button type="submit">Add User</button>
+        </div>
+        <div className="form-group">
+          <label htmlFor="password">Password:</label> {/* Password input for registration */}
+          <input
+            type="password"
+            id="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            placeholder="Create a password"
+          />
+        </div>
+        <button type="submit" className="btn-register">Register</button>
       </form>
     </div>
   );

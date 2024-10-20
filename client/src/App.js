@@ -1,23 +1,18 @@
+// App.js
+
 import React, { useState, useEffect } from "react";
 import UserForm from "./components/UserForm";
-import UsersList from "./components/UsersList";
+import LoginForm from "./components/LoginForm";
 import ParkingSpots from "./components/ParkingSpots";
 import ReservationForm from "./components/ReservationForm";
+import UserReservations from "./components/UserReservations";
+import Header from "./components/Header"; // Import the Header component
 
 function App() {
-  const [users, setUsers] = useState([]);
   const [parkingSpots, setParkingSpots] = useState([]);
   const [selectedSpot, setSelectedSpot] = useState(null);
-
-  // Fetch users from the backend
-  const fetchUsers = () => {
-    fetch("http://localhost:5000/users")
-      .then((response) => response.json())
-      .then((data) => {
-        setUsers(data);
-      })
-      .catch((error) => console.error("Error fetching users:", error));
-  };
+  const [loggedInUserID, setLoggedInUserID] = useState(null);
+  const [firstName, setFirstName] = useState("");
 
   // Fetch parking spots from the backend
   const fetchParkingSpots = () => {
@@ -30,7 +25,6 @@ function App() {
   };
 
   useEffect(() => {
-    fetchUsers();
     fetchParkingSpots();
   }, []);
 
@@ -44,21 +38,42 @@ function App() {
     setSelectedSpot(null);
   };
 
+  const handleLogin = (userID, userFirstName) => {
+    setLoggedInUserID(userID);
+    setFirstName(userFirstName);
+  };
+
+  const handleLogout = () => {
+    setLoggedInUserID(null);
+    setFirstName("");
+    alert("Logged out successfully");
+  };
+
   return (
     <div>
-      <UserForm fetchUsers={fetchUsers} />
-      <UsersList users={users} />
-      <ParkingSpots
-        parkingSpots={parkingSpots}
-        handleSpotClick={handleSpotClick}
-      />
-      {selectedSpot && (
-        <ReservationForm
-          spot={selectedSpot}
-          users={users}
-          onSuccess={handleReservationSuccess}
-          onCancel={() => setSelectedSpot(null)}
-        />
+      <Header firstName={firstName} onLogout={handleLogout} />
+      {loggedInUserID ? (
+        <div>
+          {/* Remove the welcome message and logout button here */}
+          <UserReservations userID={loggedInUserID} />
+          <ParkingSpots
+            parkingSpots={parkingSpots}
+            handleSpotClick={handleSpotClick}
+          />
+          {selectedSpot && (
+            <ReservationForm
+              spot={selectedSpot}
+              userID={loggedInUserID}
+              onSuccess={handleReservationSuccess}
+              onCancel={() => setSelectedSpot(null)}
+            />
+          )}
+        </div>
+      ) : (
+        <div>
+          <LoginForm onLogin={handleLogin} />
+          <UserForm />
+        </div>
       )}
     </div>
   );

@@ -1,0 +1,46 @@
+/* UserReservations.css */
+
+.reservations-container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #e3f2fd;
+    border: 1px solid #90caf9;
+    border-radius: 8px;
+  }
+  
+  .reservations-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #1976d2;
+  }
+  
+  .reservations-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .reservations-table th,
+  .reservations-table td {
+    padding: 12px;
+    border: 1px solid #ccc;
+    text-align: center;
+  }
+  
+  .reservations-table th {
+    background-color: #bbdefb;
+  }
+  
+  .btn-cancel-reservation {
+    padding: 6px 12px;
+    background-color: #e53935;
+    border: none;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .btn-cancel-reservation:hover {
+    background-color: #c62828;
+  }
+  

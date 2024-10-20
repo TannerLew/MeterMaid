@@ -1,129 +1,112 @@
-// components/ReservationForm/ReservationForm.js
-import React, { useState } from "react";
-import UserSelector from "./UserSelector";
-import DateSelector from "./DateSelector";
-import TimeSelector from "./TimeSelector";
-import UnavailableTimes from "./UnavailableTimes";
-import useUnavailableSlots from "../hooks/useUnavailableSlots";
+import React, { useState, useEffect } from "react";
+import "./ReservationForm.css"; // Import the CSS file
 
-function ReservationForm({ spot, users, onSuccess, onCancel }) {
-  const [reservationData, setReservationData] = useState({
-    userID: "",
-    date: new Date().toISOString().split("T")[0], // Today's date
-    startHour: "",
-    startMinute: "",
-    startPeriod: "AM",
-    endHour: "",
-    endMinute: "",
-    endPeriod: "AM",
-  });
+function ReservationForm({ spot, userID, onSuccess, onCancel }) {
+  const [date, setDate] = useState("");
+  const [startTimeOptions, setStartTimeOptions] = useState([]);
+  const [endTimeOptions, setEndTimeOptions] = useState([]);
+  const [startTime, setStartTime] = useState("");
+  const [endTime, setEndTime] = useState("");
+  const [unavailableSlots, setUnavailableSlots] = useState([]);
 
-  const unavailableSlots = useUnavailableSlots(
-    spot.spotID,
-    reservationData.date
-  );
-
-  const handleChange = (e) => {
-    setReservationData({
-      ...reservationData,
-      [e.target.name]: e.target.value,
-    });
+  // Helper function to convert 24-hour time to 12-hour format
+  const convertTo12HourFormat = (time) => {
+    const [hourStr, minute] = time.split(":");
+    let hour = parseInt(hourStr, 10);
+    const ampm = hour >= 12 ? "PM" : "AM";
+    hour = hour % 12 || 12; // Convert hour to 12-hour format, handling midnight and noon
+    return `${hour}:${minute} ${ampm}`;
   };
 
-  const handleReservationSubmit = (event) => {
+  // Function to generate time options
+  const generateTimeOptions = () => {
+    const now = new Date();
+    let currentHour = now.getHours();
+    let currentMinutes = Math.ceil(now.getMinutes() / 15) * 15; // Round up to the next 15 minutes
+
+    if (currentMinutes === 60) {
+      currentMinutes = 0;
+      currentHour++;
+    }
+
+    const options = [];
+    for (let hour = currentHour; hour < 24; hour++) {
+      for (let minutes = currentMinutes; minutes < 60; minutes += 15) {
+        const time = `${hour.toString().padStart(2, "0")}:${minutes
+          .toString()
+          .padStart(2, "0")}`;
+        options.push(time);
+      }
+      currentMinutes = 0; // Reset minutes after the first iteration
+    }
+    return options;
+  };
+
+  // Set time options when date changes or page loads
+  useEffect(() => {
+    if (date) {
+      const timeOptions = generateTimeOptions();
+      setStartTimeOptions(timeOptions);
+      setEndTimeOptions(timeOptions);
+    }
+  }, [date]);
+
+  // Fetch unavailable times when date changes
+  useEffect(() => {
+    if (date) {
+      fetch(
+        `http://localhost:5000/available_times/${spot.spotID}?date=${date}`
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.unavailableSlots) {
+            setUnavailableSlots(data.unavailableSlots);
+          } else {
+            setUnavailableSlots([]);
+          }
+        })
+        .catch((error) => {
+          console.error("Error fetching unavailable times:", error);
+        });
+    } else {
+      setUnavailableSlots([]);
+    }
+  }, [date, spot.spotID]);
+
+  const handleSubmit = (event) => {
     event.preventDefault();
 
-    // Place the validation and submission logic here
-    // (Same as previously implemented)
-
-    // Ensure all time fields are filled
-    const {
-      userID,
-      date,
-      startHour,
-      startMinute,
-      startPeriod,
-      endHour,
-      endMinute,
-      endPeriod,
-    } = reservationData;
-
-    if (
-      !userID ||
-      !date ||
-      !startHour ||
-      !startMinute ||
-      !endHour ||
-      !endMinute
-    ) {
-      alert("Please fill in all fields.");
-      return;
-    }
-
-    // Convert 12-hour format to 24-hour format
-    const convertTo24Hour = (hour, period) => {
-      let hourInt = parseInt(hour, 10);
-      if (period === "PM" && hourInt !== 12) {
-        hourInt += 12;
-      }
-      if (period === "AM" && hourInt === 12) {
-        hourInt = 0;
-      }
-      return String(hourInt).padStart(2, "0");
-    };
-
-    const startHour24 = convertTo24Hour(startHour, startPeriod);
-    const endHour24 = convertTo24Hour(endHour, endPeriod);
-
-    // Combine date and times into datetime strings
-    const startTimeStr = `${startHour24}:${startMinute}`;
-    const endTimeStr = `${endHour24}:${endMinute}`;
-    const startDateTimeStr = `${date} ${startTimeStr}`;
-    const endDateTimeStr = `${date} ${endTimeStr}`;
-
-    // Parse the datetime strings into Date objects
-    const startDateTime = new Date(`${date}T${startTimeStr}:00`);
-    const endDateTime = new Date(`${date}T${endTimeStr}:00`);
-
-    // Validation logic (overlaps, duration, etc.)
+    // Combine date with times
+    const formattedStartTime = `${date} ${startTime}`;
+    const formattedEndTime = `${date} ${endTime}`;
 
     // Check if end time is after start time
-    if (endDateTime <= startDateTime) {
-      alert("End time must be after start time.");
+    if (endTime <= startTime) {
+      alert("End time must be after start time");
       return;
     }
 
-    // Check if the duration exceeds 8 hours
-    const durationHours = (endDateTime - startDateTime) / (1000 * 60 * 60);
-    if (durationHours > 8) {
-      alert("Reservation cannot exceed 8 hours.");
-      return;
-    }
-
-    // Check for overlapping reservations
-    const isTimeAvailable = (start, end) => {
-      for (let slot of unavailableSlots) {
-        const slotStart = new Date(`${date}T${slot.startTime}:00`);
-        const slotEnd = new Date(`${date}T${slot.endTime}:00`);
-
-        if (end > slotStart && start < slotEnd) {
-          return false; // Overlaps with an unavailable slot
-        }
+    // Check for overlap with unavailable slots
+    const reservationStart = parseInt(startTime.replace(":", ""), 10);
+    const reservationEnd = parseInt(endTime.replace(":", ""), 10);
+    for (const slot of unavailableSlots) {
+      const slotStart = parseInt(slot.startTime.replace(":", ""), 10);
+      const slotEnd = parseInt(slot.endTime.replace(":", ""), 10);
+      if (
+        (reservationStart >= slotStart && reservationStart < slotEnd) ||
+        (reservationEnd > slotStart && reservationEnd <= slotEnd) ||
+        (reservationStart <= slotStart && reservationEnd >= slotEnd)
+      ) {
+        alert("Selected time overlaps with an existing reservation");
+        return;
       }
-      return true; // Does not overlap
-    };
-
-    if (!isTimeAvailable(startDateTime, endDateTime)) {
-      alert("Selected time overlaps with an existing reservation.");
-      return;
     }
 
-    // Submit the reservation
     const data = {
-      userID,
+      userID: userID,
       spotID: spot.spotID,
-      startTime: startDateTimeStr,
-      endTime: endDateTimeStr,
+      startTime: formattedStartTime,
+      endTime: formattedEndTime,
     };
 
     fetch("http://localhost:5000/reserve_spot", {
@@ -135,7 +118,12 @@ function ReservationForm({ spot, users, onSuccess, onCancel }) {
     })
       .then((response) => {
         if (response.ok) {
-          alert("Spot reserved successfully");
+          alert("Reservation successful");
+          // Reset the form
+          setDate("");
+          setStartTime("");
+          setEndTime("");
+          // Notify parent component
           onSuccess();
         } else {
           response.json().then((data) => {
@@ -149,45 +137,89 @@ function ReservationForm({ spot, users, onSuccess, onCancel }) {
       });
   };
 
+  // Disable past dates
+  const today = new Date().toISOString().split("T")[0];
+
   return (
-    <div>
-      <h3>Reserve Spot {spot.spotID}</h3>
-      <form onSubmit={handleReservationSubmit}>
-        <UserSelector
-          users={users}
-          userID={reservationData.userID}
-          onChange={handleChange}
-        />
-        <br />
-        <DateSelector date={reservationData.date} onChange={handleChange} />
-        <br />
-        <UnavailableTimes unavailableSlots={unavailableSlots} />
-        <TimeSelector
-          label="Start Time:"
-          hourName="startHour"
-          minuteName="startMinute"
-          periodName="startPeriod"
-          hourValue={reservationData.startHour}
-          minuteValue={reservationData.startMinute}
-          periodValue={reservationData.startPeriod}
-          onChange={handleChange}
-        />
-        <br />
-        <TimeSelector
-          label="End Time:"
-          hourName="endHour"
-          minuteName="endMinute"
-          periodName="endPeriod"
-          hourValue={reservationData.endHour}
-          minuteValue={reservationData.endMinute}
-          periodValue={reservationData.endPeriod}
-          onChange={handleChange}
-        />
-        <br />
-        <button type="submit">Reserve Spot</button>
-        <button type="button" onClick={onCancel}>
-          Cancel
-        </button>
+    <div className="reservation-container">
+      <h2>Reserve Spot {spot.spotID}</h2>
+      <form onSubmit={handleSubmit} className="reservation-form">
+        <div className="form-group">
+          <label htmlFor="date">Select Date:</label>
+          <input
+            type="date"
+            id="date"
+            value={date}
+            onChange={(e) => {
+              setDate(e.target.value);
+              setStartTime("");
+              setEndTime("");
+            }}
+            min={today} // Disable past dates
+            required
+          />
+        </div>
+        {date && (
+          <>
+            <div className="form-group">
+              <label htmlFor="startTime">Start Time:</label>
+              <select
+                id="startTime"
+                value={startTime}
+                onChange={(e) => setStartTime(e.target.value)}
+                required
+              >
+                <option value="" disabled>
+                  Select Start Time
+                </option>
+                {startTimeOptions.map((option, index) => (
+                  <option key={index} value={option}>
+                    {convertTo12HourFormat(option)}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="form-group">
+              <label htmlFor="endTime">End Time:</label>
+              <select
+                id="endTime"
+                value={endTime}
+                onChange={(e) => setEndTime(e.target.value)}
+                required
+              >
+                <option value="" disabled>
+                  Select End Time
+                </option>
+                {endTimeOptions.map((option, index) => (
+                  <option key={index} value={option}>
+                    {convertTo12HourFormat(option)}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="unavailable-times">
+              <h3>Unavailable Times:</h3>
+              {unavailableSlots.length > 0 ? (
+                <ul>
+                  {unavailableSlots.map((slot, index) => (
+                    <li key={index}>
+                      {convertTo12HourFormat(slot.startTime)} -{" "}
+                      {convertTo12HourFormat(slot.endTime)}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p>No reservations for this day.</p>
+              )}
+            </div>
+            <button type="submit" className="btn-reserve">
+              Reserve Spot
+            </button>
+            <button type="button" onClick={onCancel} className="btn-cancel">
+              Cancel
+            </button>
+          </>
+        )}
       </form>
     </div>
   );

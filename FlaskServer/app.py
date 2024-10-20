@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from models import db, Users, ParkingSpots, Reservations
 from datetime import datetime, timedelta
-
+import hashlib
 app = Flask(__name__)
 CORS(app)
 
@@ -15,15 +15,18 @@ db.init_app(app)
 with app.app_context():
     db.create_all()
 
-# Route to add a new user
+import hashlib
+
+# Route to add a new user (with password hashing)
 @app.route('/add_user', methods=['POST'])
 def add_user():
     data = request.get_json()
     firstName = data.get('firstName')
     lastName = data.get('lastName')
     mNumber = data.get('mNumber')
+    password = data.get('password')  # New field for password
 
-    if not firstName or not lastName or not mNumber:
+    if not firstName or not lastName or not mNumber or not password:
         return jsonify({'message': 'Missing data'}), 400
 
     # Check if mNumber is unique
@@ -31,11 +34,86 @@ def add_user():
     if existing_user:
         return jsonify({'message': 'M Number already exists'}), 400
 
-    new_user = Users(firstName=firstName, lastName=lastName, mNumber=mNumber)
+    # Hash the password before storing it
+    hashed_password = hashlib.sha256(password.encode()).hexdigest()
+
+    new_user = Users(firstName=firstName, lastName=lastName, mNumber=mNumber, password=hashed_password)
     db.session.add(new_user)
     db.session.commit()
 
     return jsonify({'message': 'User added successfully'}), 200
+
+
+# Route to login a user
+@app.route('/login', methods=['POST'])
+def login():
+    data = request.get_json()
+    mNumber = data.get('mNumber')
+    password = data.get('password')
+
+    if not mNumber or not password:
+        return jsonify({'message': 'Missing data'}), 400
+
+    # Find the user by mNumber
+    user = Users.query.filter_by(mNumber=mNumber).first()
+    if not user:
+        return jsonify({'message': 'User not found'}), 404
+
+    # Hash the entered password and compare with the stored hash
+    hashed_password = hashlib.sha256(password.encode()).hexdigest()
+    if hashed_password != user.password:
+        return jsonify({'message': 'Incorrect password'}), 401
+
+    # If password matches, login successful
+    return jsonify({
+        'message': 'Login successful',
+        'userID': user.userID,
+        'firstName': user.firstName  # Include firstName in response
+    }), 200
+# logout route
+@app.route('/logout', methods=['POST'])
+def logout():
+    return jsonify({'message': 'Logged out successfully'}), 200
+
+# Route to cancel a reservation
+@app.route('/cancel_reservation', methods=['POST'])
+def cancel_reservation():
+    data = request.get_json()
+    reservationID = data.get('reservationID')
+    userID = data.get('userID')
+
+    if not reservationID or not userID:
+        return jsonify({'message': 'Missing data'}), 400
+
+    # Fetch the reservation
+    reservation = Reservations.query.filter_by(reservationID=reservationID, userID=userID, status='Active').first()
+    if not reservation:
+        return jsonify({'message': 'Reservation not found or already canceled'}), 404
+
+    # Update the reservation status to 'Canceled'
+    reservation.status = 'Canceled'
+    db.session.commit()
+
+    return jsonify({'message': 'Reservation canceled successfully'}), 200
+
+
+@app.route('/user_reservations/<int:userID>', methods=['GET'])
+def get_user_reservations(userID):
+    # Fetch active reservations for the user
+    reservations = Reservations.query.filter_by(userID=userID, status='Active').all()
+    
+    reservations_list = []
+    for res in reservations:
+        reservations_list.append({
+            'reservationID': res.reservationID,
+            'spotID': res.spotID,
+            'startTime': res.startTime.strftime('%Y-%m-%d %H:%M'),
+            'endTime': res.endTime.strftime('%Y-%m-%d %H:%M'),
+            'status': res.status
+        })
+    
+    return jsonify(reservations_list), 200
+
 
 # Route to get all users
 @app.route('/users', methods=['GET'])
@@ -96,7 +174,9 @@ def get_available_times(spotID):
     try:
         date = datetime.strptime(date_str, '%Y-%m-%d').date()
     except ValueError:
-        return jsonify({'message': 'Invalid date format'}), 400
+        
+        return jsonify({'message': f'Invalid date format received: {date_str}'}), 400
+
 
     # Fetch all reservations for the spot on that date
     reservations = Reservations.query.filter(
