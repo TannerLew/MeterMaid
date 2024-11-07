@@ -1,55 +1,70 @@
 /* UserForm.css */
 
 .register-container {
-    max-width: 500px;
-    margin: 50px auto;
-    padding: 20px;
-    background-color: #e8f0fe;
-    border: 1px solid #c6dafc;
-    border-radius: 8px;
-  }
-  
-  .register-container h1 {
-    text-align: center;
-    margin-bottom: 30px;
-    color: #1a73e8;
-  }
-  
-  .register-form .form-group {
-    margin-bottom: 20px;
-  }
-  
-  .register-form label {
-    display: block;
-    margin-bottom: 8px;
-    color: #333;
-  }
-  
-  .register-form input {
-    width: 100%;
-    padding: 10px;
-    box-sizing: border-box;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-  }
-  
-  .register-form input:focus {
-    border-color: #1a73e8;
-    outline: none;
-  }
-  
-  .btn-register {
-    width: 100%;
-    padding: 12px;
-    background-color: #1a73e8;
-    border: none;
-    color: white;
-    font-size: 16px;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  
-  .btn-register:hover {
-    background-color: #1669c1;
-  }
-  
+  max-width: 500px;
+  margin: 50px auto;
+  padding: 20px;
+  background-color: #e8f0fe;
+  border: 1px solid #c6dafc;
+  border-radius: 8px;
+}
+
+.register-container h1 {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #1a73e8;
+}
+
+.register-form .form-group {
+  margin-bottom: 20px;
+}
+
+.register-form label {
+  display: block;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.register-form input {
+  width: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.register-form input:focus {
+  border-color: #1a73e8;
+  outline: none;
+}
+
+.btn-register {
+  width: 100%;
+  padding: 12px;
+  background-color: #1a73e8;
+  border: none;
+  color: white;
+  font-size: 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-register:hover {
+  background-color: #1669c1;
+}
+
+.btn-back-to-login {
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  background-color: #6c757d;
+  border: none;
+  color: white;
+  font-size: 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-back-to-login:hover {
+  background-color: #5a6268;
+}

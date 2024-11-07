@@ -1,13 +1,14 @@
 // UserForm.js
 
 import React, { useState } from "react";
-import "./UserForm.css";  // Import the CSS file
+import "./UserForm.css"; // Import the CSS file
 
-function UserForm() {
+function UserForm({ onBackToLogin }) {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [mNumber, setMNumber] = useState("");
   const [password, setPassword] = useState("");
+  const [registrationSuccess, setRegistrationSuccess] = useState(false); // Track registration status
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -34,6 +35,7 @@ function UserForm() {
           setLastName("");
           setMNumber("");
           setPassword("");
+          setRegistrationSuccess(true); // Set registration success
         } else {
           response.json().then((data) => {
             alert(data.message || "Failed to add user");
@@ -45,6 +47,18 @@ function UserForm() {
         alert("An error occurred");
       });
   };
+
+  if (registrationSuccess) {
+    return (
+      <div className="register-container">
+        <h1>Registration Successful</h1>
+        <p>Your account has been created successfully.</p>
+        <button onClick={onBackToLogin} className="btn-back-to-login">
+          Back to Login
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="register-container">
@@ -94,8 +108,13 @@ function UserForm() {
             placeholder="Create a password"
           />
         </div>
-        <button type="submit" className="btn-register">Register</button>
+        <button type="submit" className="btn-register">
+          Register
+        </button>
       </form>
+      <button onClick={onBackToLogin} className="btn-back-to-login">
+        Back to Login
+      </button>
     </div>
   );
 }

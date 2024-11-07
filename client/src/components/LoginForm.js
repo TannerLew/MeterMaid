@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import "./LoginForm.css"; // Import the CSS file
 
-function LoginForm({ onLogin }) {
+function LoginForm({ onLogin, onGoToRegister }) {
   const [mNumber, setMNumber] = useState("");
   const [password, setPassword] = useState("");
 
@@ -73,6 +73,12 @@ function LoginForm({ onLogin }) {
           Login
         </button>
       </form>
+      <p className="register-link">
+        Don't have an account?{" "}
+        <button onClick={onGoToRegister} className="btn-register-link">
+          Register here
+        </button>
+      </p>
     </div>
   );
 }

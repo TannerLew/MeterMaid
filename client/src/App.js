@@ -13,6 +13,7 @@ function App() {
   const [selectedSpot, setSelectedSpot] = useState(null);
   const [loggedInUserID, setLoggedInUserID] = useState(null);
   const [firstName, setFirstName] = useState("");
+  const [currentPage, setCurrentPage] = useState("login"); // Manage current page
 
   // Fetch parking spots from the backend
   const fetchParkingSpots = () => {
@@ -41,20 +42,35 @@ function App() {
   const handleLogin = (userID, userFirstName) => {
     setLoggedInUserID(userID);
     setFirstName(userFirstName);
+    setCurrentPage("reservations"); // Navigate to reservations page after login
   };
 
   const handleLogout = () => {
     setLoggedInUserID(null);
     setFirstName("");
+    setCurrentPage("login"); // Navigate back to login page after logout
     alert("Logged out successfully");
+  };
+
+  const handleGoToRegister = () => {
+    setCurrentPage("register"); // Navigate to registration page
+  };
+
+  const handleBackToLogin = () => {
+    setCurrentPage("login"); // Navigate back to login page
   };
 
   return (
     <div>
       <Header firstName={firstName} onLogout={handleLogout} />
-      {loggedInUserID ? (
+      {currentPage === "login" && (
+        <LoginForm onLogin={handleLogin} onGoToRegister={handleGoToRegister} />
+      )}
+      {currentPage === "register" && (
+        <UserForm onBackToLogin={handleBackToLogin} />
+      )}
+      {currentPage === "reservations" && loggedInUserID && (
         <div>
-          {/* Remove the welcome message and logout button here */}
           <UserReservations userID={loggedInUserID} />
           <ParkingSpots
             parkingSpots={parkingSpots}
@@ -68,11 +84,6 @@ function App() {
               onCancel={() => setSelectedSpot(null)}
             />
           )}
-        </div>
-      ) : (
-        <div>
-          <LoginForm onLogin={handleLogin} />
-          <UserForm />
         </div>
       )}
     </div>
