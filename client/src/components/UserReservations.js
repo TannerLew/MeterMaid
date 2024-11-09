@@ -1,9 +1,7 @@
-// UserReservations.js
-
 import React, { useState, useEffect, useCallback } from "react";
 import "./UserReservations.css"; // Import the CSS file
 
-function UserReservations({ userID }) {
+function UserReservations({ userID, reservationsUpdated }) { // Add reservationsUpdated as a prop
   const [reservations, setReservations] = useState([]);
 
   // Memoize fetchReservations using useCallback
@@ -20,7 +18,7 @@ function UserReservations({ userID }) {
 
   useEffect(() => {
     fetchReservations();
-  }, [fetchReservations]); // Include fetchReservations in dependency array
+  }, [fetchReservations, reservationsUpdated]); // Add reservationsUpdated to the dependency array
 
   const handleCancelReservation = (reservationID) => {
     if (window.confirm("Are you sure you want to cancel this reservation?")) {
