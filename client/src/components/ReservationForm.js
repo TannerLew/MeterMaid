@@ -8,6 +8,7 @@ function ReservationForm({ spot, userID, onSuccess, onCancel, selectedDate }) {
   const [endTime, setEndTime] = useState("");
   const [unavailableSlots, setUnavailableSlots] = useState([]);
 
+  // Helper function to convert 24-hour time to 12-hour format
   const convertTo12HourFormat = (time) => {
     const [hourStr, minute] = time.split(":");
     let hour = parseInt(hourStr, 10);
@@ -16,6 +17,7 @@ function ReservationForm({ spot, userID, onSuccess, onCancel, selectedDate }) {
     return `${hour}:${minute} ${ampm}`;
   };
 
+  // Generate time options from the current time onward
   const generateTimeOptions = () => {
     const now = new Date();
     let currentHour = now.getHours();
@@ -39,6 +41,7 @@ function ReservationForm({ spot, userID, onSuccess, onCancel, selectedDate }) {
     return options;
   };
 
+  // Set available time options for start and end times based on the selected date
   useEffect(() => {
     if (selectedDate) {
       const timeOptions = generateTimeOptions();
@@ -47,18 +50,14 @@ function ReservationForm({ spot, userID, onSuccess, onCancel, selectedDate }) {
     }
   }, [selectedDate]);
 
+  // Fetch unavailable times when the selected date or spot changes
   useEffect(() => {
-    if (selectedDate) {
-      fetch(
-        `http://localhost:5000/available_times/${spot.spotID}?date=${selectedDate}`
-      )
+    if (selectedDate && spot) {
+      fetch(`http://localhost:5000/available_times/${spot.spotID}?date=${selectedDate}`)
         .then((response) => response.json())
         .then((data) => {
-          if (data.unavailableSlots) {
-            setUnavailableSlots(data.unavailableSlots);
-          } else {
-            setUnavailableSlots([]);
-          }
+          console.log("Unavailable times for spot", spot.spotID, "on date", selectedDate, ":", data.unavailableSlots);
+          setUnavailableSlots(data.unavailableSlots || []);
         })
         .catch((error) => {
           console.error("Error fetching unavailable times:", error);
@@ -66,7 +65,7 @@ function ReservationForm({ spot, userID, onSuccess, onCancel, selectedDate }) {
     } else {
       setUnavailableSlots([]);
     }
-  }, [selectedDate, spot.spotID]);
+  }, [selectedDate, spot]);
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -79,6 +78,7 @@ function ReservationForm({ spot, userID, onSuccess, onCancel, selectedDate }) {
       return;
     }
 
+    // Check if selected time range overlaps with unavailable slots
     const reservationStart = parseInt(startTime.replace(":", ""), 10);
     const reservationEnd = parseInt(endTime.replace(":", ""), 10);
     for (const slot of unavailableSlots) {
@@ -94,6 +94,7 @@ function ReservationForm({ spot, userID, onSuccess, onCancel, selectedDate }) {
       }
     }
 
+    // Prepare data for the reservation request
     const data = {
       userID: userID,
       spotID: spot.spotID,
@@ -101,6 +102,7 @@ function ReservationForm({ spot, userID, onSuccess, onCancel, selectedDate }) {
       endTime: formattedEndTime,
     };
 
+    // Send reservation request to the backend
     fetch("http://localhost:5000/reserve_spot", {
       method: "POST",
       headers: {
