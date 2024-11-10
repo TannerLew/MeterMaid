@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import UserForm from "./components/UserForm";
 import LoginForm from "./components/LoginForm";
 import ParkingSpots from "./components/ParkingSpots";
@@ -8,34 +8,38 @@ import Header from "./components/Header";
 import "./App.css"; // Import the CSS file
 
 function App() {
+  const today = new Date().toISOString().split("T")[0]; // Get today's date
   const [parkingSpots, setParkingSpots] = useState([]);
   const [selectedSpot, setSelectedSpot] = useState(null);
   const [loggedInUserID, setLoggedInUserID] = useState(null);
   const [firstName, setFirstName] = useState("");
   const [currentPage, setCurrentPage] = useState("login");
   const [reservationsUpdated, setReservationsUpdated] = useState(false);
-  const [selectedDate, setSelectedDate] = useState("");
+  const [selectedDate, setSelectedDate] = useState(today); // Set today's date as default
 
-  const fetchParkingSpots = () => {
-    fetch("http://localhost:5000/parking_spots")
+  // Fetch parking spots availability based on the selected date
+  const fetchParkingSpots = useCallback(() => {
+    fetch(`http://localhost:5000/parking_spots?date=${selectedDate}`)
       .then((response) => response.json())
       .then((data) => {
         setParkingSpots(data);
       })
       .catch((error) => console.error("Error fetching parking spots:", error));
-  };
+  }, [selectedDate]);
+  
 
   useEffect(() => {
     fetchParkingSpots();
-  }, []);
+  }, [fetchParkingSpots]); 
 
   const handleSpotClick = (spot) => {
     setSelectedSpot(spot);
   };
 
   const handleReservationSuccess = () => {
-    setReservationsUpdated((prev) => !prev);
+    setReservationsUpdated((prev) => !prev); // Toggle to trigger refresh
     setSelectedSpot(null);
+    fetchParkingSpots(); // Refresh spots to update their status
   };
 
   const handleLogin = (userID, userFirstName) => {
@@ -59,8 +63,6 @@ function App() {
     setCurrentPage("login");
   };
 
-  const today = new Date().toISOString().split("T")[0];
-
   return (
     <div>
       <Header firstName={firstName} onLogout={handleLogout} />
@@ -77,10 +79,7 @@ function App() {
             reservationsUpdated={reservationsUpdated}
           />
           <div className="date-selection-container">
-            <h2>Choose Your Reservation Date:</h2>
-            <label htmlFor="reservation-date" className="date-selection-label">
-                 
-            </label>
+            <h2>Choose Your Reservation Date :</h2>
             <input
               type="date"
               id="reservation-date"
@@ -94,6 +93,7 @@ function App() {
           <ParkingSpots
             parkingSpots={parkingSpots}
             handleSpotClick={handleSpotClick}
+            selectedDate={selectedDate} // Pass selectedDate to ParkingSpots
           />
           {selectedSpot && selectedDate && (
             <ReservationForm

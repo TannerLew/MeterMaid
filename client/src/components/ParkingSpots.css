@@ -1,69 +1,95 @@
 /* ParkingSpots.css */
 
 .parking-container {
-    padding: 20px;
-  }
-  
-  .parking-container h2 {
-    text-align: center;
-    margin-bottom: 20px;
-    color: #333;
-  }
-  
-  .parking-grid {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-  
-  .parking-spot {
-    width: 120px;
-    height: 120px;
-    margin: 10px;
-    background-color: gray;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    cursor: pointer;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
-    text-align: center;
-    transition: transform 0.2s, box-shadow 0.2s;
-  }
-  
-  .parking-spot:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-  }
-  
-  /* Status-based colors */
-  .parking-spot.noreservations {
-    background-color: #4caf50; /* Green */
-  }
-  
-  .parking-spot.quarterreserved {
-    background-color: #ffc107; /* Yellow */
-  }
-  
-  .parking-spot.halfreserved {
-    background-color: #ff9800; /* Orange */
-  }
-  
-  .parking-spot.threefourthsreserved {
-    background-color: #ff5722; /* Deep Orange */
-  }
-  
-  .parking-spot.fullyreserved {
-    background-color: #f44336; /* Red */
-  }
-  
-  .spot-id {
-    font-size: 18px;
-    font-weight: bold;
-  }
-  
-  .spot-status {
-    font-size: 14px;
-  }
-  
+  padding: 20px;
+}
+
+.parking-container h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.parking-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.parking-spot {
+  width: 120px;
+  height: 220px;
+  margin: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  cursor: pointer;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+  text-align: center;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.parking-spot:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Colors for each fullness range */
+.reservations-0 {
+  background-color: #4caf50; /* Green */
+}
+
+.reservations-10 {
+  background-color: #66bb6a;
+}
+
+.reservations-20 {
+  background-color: #81c784;
+}
+
+.reservations-30 {
+  background-color: #a5d6a7;
+}
+
+.reservations-40 {
+  background-color: #dce775;
+}
+
+.reservations-50 {
+  background-color: #fff176; /* Yellow */
+}
+
+.reservations-60 {
+  background-color: #ffeb3b;
+}
+
+.reservations-70 {
+  background-color: #ffc107; /* Amber */
+}
+
+.reservations-80 {
+  background-color: #ff9800; /* Orange */
+}
+
+.reservations-90 {
+  background-color: #f57c00;
+}
+
+.reservations-100 {
+  background-color: #f44336; /* Red */
+}
+
+.unknown {
+  background-color: gray; /* Fallback color */
+}
+
+.spot-id {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.spot-status {
+  font-size: 14px;
+}

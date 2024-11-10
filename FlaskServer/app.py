@@ -132,34 +132,52 @@ def get_users():
 # Route to get all parking spots with fullness status
 @app.route('/parking_spots', methods=['GET'])
 def get_parking_spots():
-    spots = ParkingSpots.query.all()
-    spots_list = []
+    date_str = request.args.get('date')
+    if not date_str:
+        return jsonify({'message': 'Date parameter is required'}), 400
+
+    try:
+        selected_date = datetime.strptime(date_str, '%Y-%m-%d').date()
+    except ValueError:
+        return jsonify({'message': f'Invalid date format received: {date_str}'}), 400
+
+    today = datetime.now().date()
     now = datetime.now()
 
-    # Calculate the number of active reservations per spot
+    # Check if selected date is today and calculate hours left in the day
+    if selected_date == today:
+        hours_left_today = 24 - now.hour - (1 if now.minute > 0 else 0)
+    else:
+        hours_left_today = 24  # Assume a full day for future dates
+
+    spots = ParkingSpots.query.all()
+    spots_list = []
+
     for spot in spots:
-        active_reservations = Reservations.query.filter(
+        # Fetch all active reservations for this spot on the selected date
+        reservations = Reservations.query.filter(
             Reservations.spotID == spot.spotID,
             Reservations.status == 'Active',
-            Reservations.endTime > now
-        ).count()
+            db.func.date(Reservations.startTime) == selected_date
+        ).all()
 
-        # Determine the status based on the number of active reservations
-        # For simplicity, we'll assume a maximum of 4 reservations per spot per day
-        if active_reservations == 0:
-            status = 'NoReservations'
-        elif active_reservations == 1:
-            status = 'QuarterReserved'
-        elif active_reservations == 2:
-            status = 'HalfReserved'
-        elif active_reservations == 3:
-            status = 'ThreeFourthsReserved'
-        else:
-            status = 'FullyReserved'
+        # Calculate total hours reserved, adjusted for remaining hours if today
+        hours_reserved = 0
+        for res in reservations:
+            res_start = max(now, res.startTime) if selected_date == today else res.startTime
+            res_end = res.endTime
+            if res_end > res_start:
+                duration = (res_end - res_start).total_seconds() / 3600  # Convert to hours
+                hours_reserved += duration
 
+        # Cap hours_reserved to hours_left_today if today is selected
+        hours_reserved = min(hours_reserved, hours_left_today)
+
+        # Append spot data including adjusted totalHours based on current day or future day
         spots_list.append({
             'spotID': spot.spotID,
-            'status': status
+            'hoursReserved': hours_reserved,
+            'totalHours': hours_left_today  # Adjusted based on remaining hours today or 24 for future dates
         })
 
     return jsonify(spots_list), 200

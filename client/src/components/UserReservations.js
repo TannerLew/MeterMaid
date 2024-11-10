@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
-import "./UserReservations.css"; // Import the CSS file
+import "./UserReservations.css";
 
-function UserReservations({ userID, reservationsUpdated }) { // Add reservationsUpdated as a prop
+function UserReservations({ userID, reservationsUpdated }) {
   const [reservations, setReservations] = useState([]);
 
   // Memoize fetchReservations using useCallback
@@ -40,6 +40,25 @@ function UserReservations({ userID, reservationsUpdated }) { // Add reservations
     }
   };
 
+  // Helper functions to format date and time
+  const formatDate = (dateTime) => {
+    const dateObj = new Date(dateTime);
+    return dateObj.toLocaleDateString("en-US", {
+      year: "2-digit",
+      month: "2-digit",
+      day: "2-digit",
+    });
+  };
+
+  const formatTime = (dateTime) => {
+    const dateObj = new Date(dateTime);
+    return dateObj.toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    });
+  };
+
   return (
     <div className="reservations-container">
       <h2>My Reservations</h2>
@@ -48,7 +67,8 @@ function UserReservations({ userID, reservationsUpdated }) { // Add reservations
           <thead>
             <tr>
               <th>Reservation ID</th>
-              <th>Spot ID</th>
+              <th>Spot #</th>
+              <th>Date</th>
               <th>Start Time</th>
               <th>End Time</th>
               <th>Status</th>
@@ -60,8 +80,9 @@ function UserReservations({ userID, reservationsUpdated }) { // Add reservations
               <tr key={res.reservationID}>
                 <td>{res.reservationID}</td>
                 <td>{res.spotID}</td>
-                <td>{res.startTime}</td>
-                <td>{res.endTime}</td>
+                <td>{formatDate(res.startTime)}</td>
+                <td>{formatTime(res.startTime)}</td>
+                <td>{formatTime(res.endTime)}</td>
                 <td>{res.status}</td>
                 <td>
                   <button
