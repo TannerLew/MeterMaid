@@ -128,7 +128,7 @@ function ReservationForm({ spot, userID, onSuccess, onCancel, selectedDate }) {
   };
 
   return (
-    <div className="reservationform-background">
+
       <div className="reservation-container">
         <h2>Reserve Spot {spot.spotID}</h2>
         <form onSubmit={handleSubmit} className="reservation-form">
@@ -190,7 +190,6 @@ function ReservationForm({ spot, userID, onSuccess, onCancel, selectedDate }) {
             Cancel
           </button>
         </form>
-      </div>
     </div>
   );
 }

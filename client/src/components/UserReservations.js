@@ -99,7 +99,6 @@ function UserReservations({ userID, reservationsUpdated, onClose }) {
   };
 
   return (
-    <div className="reservations-container">
       <div className="reservations-container">
         <div className="reservations-header">
           <h2>My Reservations</h2>
@@ -147,7 +146,6 @@ function UserReservations({ userID, reservationsUpdated, onClose }) {
           <p>You have no active reservations.</p>
         )}
       </div>
-    </div>
   );
 }
 

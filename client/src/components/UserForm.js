@@ -61,7 +61,6 @@ function UserForm({ onBackToLogin }) {
   }
 
   return (
-    <div className="userform-background">
       <div className="register-container">
         <h1>Register User</h1>
         <form onSubmit={handleSubmit} className="register-form">
@@ -116,7 +115,6 @@ function UserForm({ onBackToLogin }) {
         <button onClick={onBackToLogin} className="btn-back-to-login">
           Back to Login
         </button>
-      </div>
     </div>
   );
 }

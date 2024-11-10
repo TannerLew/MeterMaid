@@ -28,6 +28,16 @@
   color: #61dafb;
 }
 
+body {
+  margin: 0;
+  padding: 0;
+  background-image: url('images/splash-image.jpg'); /* Adjust the path to your image */
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed; /* Keeps the image fixed when scrolling */
+  background-repeat: no-repeat;
+}
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
@@ -68,6 +78,6 @@
 }
 
 .date-selection-container h2 {
-  color: #007bff;
+  color: white;
   font-weight: bold;
 }

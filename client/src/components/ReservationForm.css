@@ -1,18 +1,5 @@
 /* ReservationForm.css */
 
-.reservationform-background {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(116, 116, 116, 0.8); /* Add some opacity */
-  background-image: url('../images/splash-image.jpg');
-  background-size: cover;
-  background-position: center;
-  z-index: -1; /* This will make sure it stays behind the container */
-}
-
 .reservation-container {
   max-width: 500px;
   margin: 20px auto;

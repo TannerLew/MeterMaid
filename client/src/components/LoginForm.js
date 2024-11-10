@@ -44,7 +44,6 @@ function LoginForm({ onLogin, onGoToRegister }) {
   };
 
   return (
-    <div className="login-background">
       <div className="login-container">
         <h1>User Login</h1>
         <form onSubmit={handleSubmit} className="login-form">
@@ -81,7 +80,6 @@ function LoginForm({ onLogin, onGoToRegister }) {
           </button>
         </p>
       </div>
-    </div>
   );
 }
 
