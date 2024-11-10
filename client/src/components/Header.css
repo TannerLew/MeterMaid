@@ -1,46 +1,146 @@
 /* Header.css */
 
 .app-header {
-    display: flex;
-    align-items: center;
-    background-color: #1976d2; /* Theme color */
-    color: white;
-    padding: 10px 20px;
-  }
-  
-  .header-left {
-    flex: 1;
-  }
-  
-  .header-left span {
-    font-size: 18px;
-  }
-  
-  .header-center {
-    flex: 1;
-    text-align: center;
-  }
-  
-  .header-center h1 {
-    margin: 0;
-    font-size: 24px;
-  }
-  
-  .header-right {
-    flex: 1;
-    text-align: right;
-  }
-  
-  .btn-logout {
-    background-color: transparent;
-    border: 1px solid white;
-    color: white;
-    padding: 6px 12px;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  
-  .btn-logout:hover {
-    background-color: rgba(255, 255, 255, 0.2);
-  }
-  
+  display: flex;
+  align-items: center;
+  background-color: #1976d2;
+  color: white;
+  padding: 10px 20px;
+}
+
+.header-left {
+  flex: 1;
+}
+
+.header-left span {
+  font-size: 18px;
+}
+
+.header-center {
+  flex: 1;
+  text-align: center;
+}
+
+.header-center h1 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.header-right {
+  flex: 1;
+  text-align: right;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.btn-logout {
+  background-color: transparent;
+  border: 1px solid white;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-left: 10px;
+}
+
+.btn-logout:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Dropdown styles */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-button {
+  background-color: transparent;
+  border: 1px solid white;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.dropdown-button:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.dropdown-menu {
+  display: block;
+  position: absolute;
+  right: 0;
+  background-color: white;
+  width: 400px;
+  max-height: 400px;
+  overflow-y: auto;
+  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+  border-radius: 8px;
+  margin-top: 8px;
+  padding: 10px;
+  color: black;
+  opacity: 0; /* Initially hidden */
+  transform: translateY(-10px); /* Slide up by default */
+  transition: opacity 0.3s ease, transform 0.3s ease; /* Smooth transition */
+}
+
+.dropdown-menu.is-open {
+  opacity: 1;
+  transform: translateY(0); /* Slide down when open */
+}
+
+.reservations-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.reservations-table th,
+.reservations-table td {
+  padding: 10px;
+  text-align: center;
+}
+
+.reservations-table th {
+  background-color: #f1f1f1;
+  font-weight: bold;
+  border-bottom: 2px solid #ddd;
+}
+
+.reservations-table td {
+  border-bottom: 1px solid #eee;
+}
+
+.btn-cancel-reservation {
+  padding: 5px 10px;
+  background-color: #e53935;
+  border: none;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-cancel-reservation:hover {
+  background-color: #c62828;
+}
+
+.no-reservations {
+  padding: 10px;
+  text-align: center;
+  color: #555;
+  font-size: 14px;
+}
+
+.dropdown-menu::-webkit-scrollbar {
+  width: 6px;
+}
+
+.dropdown-menu::-webkit-scrollbar-thumb {
+  background-color: #ccc;
+  border-radius: 3px;
+}
+
+.dropdown-menu::-webkit-scrollbar-thumb:hover {
+  background-color: #aaa;
+}

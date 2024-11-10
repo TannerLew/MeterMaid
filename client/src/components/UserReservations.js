@@ -1,27 +1,67 @@
+// UserReservations.js
+
 import React, { useState, useEffect, useCallback } from "react";
 import "./UserReservations.css";
 
-function UserReservations({ userID, reservationsUpdated }) {
+function UserReservations({ userID, reservationsUpdated, onClose }) {
   const [reservations, setReservations] = useState([]);
+
+  // Auto-cancel function to cancel past reservations
+  const autoCancelReservation = useCallback(
+    (reservationID) => {
+      fetch("http://localhost:5000/cancel_reservation", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ reservationID, userID }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(`Reservation ${reservationID} automatically canceled.`);
+        })
+        .catch((error) => {
+          console.error(
+            `Error canceling reservation ${reservationID}:`,
+            error
+          );
+        });
+    },
+    [userID]
+  ); // Add userID as a dependency to avoid stale references
 
   // Memoize fetchReservations using useCallback
   const fetchReservations = useCallback(() => {
     fetch(`http://localhost:5000/user_reservations/${userID}`)
       .then((response) => response.json())
       .then((data) => {
-        setReservations(data);
+        const now = new Date();
+
+        // Filter expired reservations and send cancellation for each
+        const activeReservations = data.filter((res) => {
+          const endTime = new Date(res.endTime);
+          if (endTime < now) {
+            autoCancelReservation(res.reservationID); // Auto-cancel past reservations
+            return false; // Filter out expired reservations from display
+          }
+          return true;
+        });
+
+        setReservations(activeReservations);
       })
       .catch((error) => {
         console.error("Error fetching reservations:", error);
       });
-  }, [userID]); // Include userID as a dependency
+  }, [userID, autoCancelReservation]); // Include autoCancelReservation in the dependency array
 
   useEffect(() => {
     fetchReservations();
   }, [fetchReservations, reservationsUpdated]); // Add reservationsUpdated to the dependency array
 
   const handleCancelReservation = (reservationID) => {
-    if (window.confirm("Are you sure you want to cancel this reservation?")) {
+    if (
+      window.confirm("Are you sure you want to cancel this reservation?")
+    ) {
       fetch("http://localhost:5000/cancel_reservation", {
         method: "POST",
         headers: {
@@ -40,7 +80,6 @@ function UserReservations({ userID, reservationsUpdated }) {
     }
   };
 
-  // Helper functions to format date and time
   const formatDate = (dateTime) => {
     const dateObj = new Date(dateTime);
     return dateObj.toLocaleDateString("en-US", {
@@ -61,13 +100,18 @@ function UserReservations({ userID, reservationsUpdated }) {
 
   return (
     <div className="reservations-container">
-      <h2>My Reservations</h2>
+      <div className="reservations-header">
+        <h2>My Reservations</h2>
+        <button onClick={onClose} className="close-reservations-button">
+          X
+        </button>
+      </div>
       {reservations.length > 0 ? (
         <table className="reservations-table">
           <thead>
             <tr>
               <th>Reservation ID</th>
-              <th>Spot #</th>
+              <th>Spot ID</th>
               <th>Date</th>
               <th>Start Time</th>
               <th>End Time</th>
@@ -86,7 +130,9 @@ function UserReservations({ userID, reservationsUpdated }) {
                 <td>{res.status}</td>
                 <td>
                   <button
-                    onClick={() => handleCancelReservation(res.reservationID)}
+                    onClick={() =>
+                      handleCancelReservation(res.reservationID)
+                    }
                     className="btn-cancel-reservation"
                   >
                     Cancel
