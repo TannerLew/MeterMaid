@@ -1,92 +1,109 @@
 /* ReservationForm.css */
 
+.reservationform-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(116, 116, 116, 0.8); /* Add some opacity */
+  background-image: url('../images/splash-image.jpg');
+  background-size: cover;
+  background-position: center;
+  z-index: -1; /* This will make sure it stays behind the container */
+}
+
 .reservation-container {
-    max-width: 500px;
-    margin: 20px auto;
-    padding: 20px;
-    background-color: #e8f5e9;
-    border: 1px solid #c8e6c9;
-    border-radius: 8px;
-  }
-  
-  .reservation-container h2 {
-    text-align: center;
-    margin-bottom: 20px;
-    color: #2e7d32;
-  }
-  
-  .reservation-form .form-group {
-    margin-bottom: 20px;
-  }
-  
-  .reservation-form label {
-    display: block;
-    margin-bottom: 8px;
-    color: #333;
-  }
-  
-  .reservation-form input {
-    width: 100%;
-    padding: 10px;
-    box-sizing: border-box;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-  }
-  
-  .reservation-form input:focus {
-    border-color: #2e7d32;
-    outline: none;
-  }
-  
-  .unavailable-times {
-    margin-top: 20px;
-  }
-  
-  .unavailable-times h3 {
-    margin-bottom: 10px;
-    color: #d32f2f;
-  }
-  
-  .unavailable-times ul {
-    list-style-type: none;
-    padding: 0;
-  }
-  
-  .unavailable-times li {
-    background-color: #ffcdd2;
-    padding: 8px;
-    margin-bottom: 5px;
-    border-radius: 4px;
-  }
-  
-  .btn-reserve {
-    width: 100%;
-    padding: 12px;
-    background-color: #2e7d32;
-    border: none;
-    color: white;
-    font-size: 16px;
-    border-radius: 4px;
-    cursor: pointer;
-    margin-bottom: 10px;
-  }
-  
-  .btn-reserve:hover {
-    background-color: #256f2a;
-  }
-  
-  .btn-cancel {
-    width: 100%;
-    padding: 12px;
-    background-color: #bdbdbd;
-    border: none;
-    color: white;
-    font-size: 16px;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  
-  .btn-cancel:hover {
-    background-color: #9e9e9e;
-  }
-  
+  max-width: 500px;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: #e8f5e9;
+  border: 1px solid #c8e6c9;
+  border-radius: 8px;
+  position: relative;
+  z-index: 1; /* Bring it above the background */
+}
+
+.reservation-container h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #2e7d32;
+}
+
+/* Other styles for the form elements */
+.reservation-form .form-group {
+  margin-bottom: 20px;
+}
+
+.reservation-form label {
+  display: block;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.reservation-form input,
+.reservation-form select {
+  width: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.reservation-form input:focus,
+.reservation-form select:focus {
+  border-color: #2e7d32;
+  outline: none;
+}
+
+.unavailable-times {
+  margin-top: 20px;
+}
+
+.unavailable-times h3 {
+  margin-bottom: 10px;
+  color: #d32f2f;
+}
+
+.unavailable-times ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.unavailable-times li {
+  background-color: #ffcdd2;
+  padding: 8px;
+  margin-bottom: 5px;
+  border-radius: 4px;
+}
+
+.btn-reserve {
+  width: 100%;
+  padding: 12px;
+  background-color: #2e7d32;
+  border: none;
+  color: white;
+  font-size: 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+.btn-reserve:hover {
+  background-color: #256f2a;
+}
+
+.btn-cancel {
+  width: 100%;
+  padding: 12px;
+  background-color: #bdbdbd;
+  border: none;
+  color: white;
+  font-size: 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-cancel:hover {
+  background-color: #9e9e9e;
+}

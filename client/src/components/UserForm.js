@@ -61,60 +61,62 @@ function UserForm({ onBackToLogin }) {
   }
 
   return (
-    <div className="register-container">
-      <h1>Register User</h1>
-      <form onSubmit={handleSubmit} className="register-form">
-        <div className="form-group">
-          <label htmlFor="firstName">First Name:</label>
-          <input
-            type="text"
-            id="firstName"
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
-            required
-            placeholder="Enter your first name"
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="lastName">Last Name:</label>
-          <input
-            type="text"
-            id="lastName"
-            value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
-            required
-            placeholder="Enter your last name"
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="mNumber">M Number:</label>
-          <input
-            type="text"
-            id="mNumber"
-            value={mNumber}
-            onChange={(e) => setMNumber(e.target.value)}
-            required
-            placeholder="Enter your M Number"
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="password">Password:</label> {/* Password input for registration */}
-          <input
-            type="password"
-            id="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            placeholder="Create a password"
-          />
-        </div>
-        <button type="submit" className="btn-register">
-          Register
+    <div className="userform-background">
+      <div className="register-container">
+        <h1>Register User</h1>
+        <form onSubmit={handleSubmit} className="register-form">
+          <div className="form-group">
+            <label htmlFor="firstName">First Name:</label>
+            <input
+              type="text"
+              id="firstName"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+              required
+              placeholder="Enter your first name"
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="lastName">Last Name:</label>
+            <input
+              type="text"
+              id="lastName"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+              required
+              placeholder="Enter your last name"
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="mNumber">M Number:</label>
+            <input
+              type="text"
+              id="mNumber"
+              value={mNumber}
+              onChange={(e) => setMNumber(e.target.value)}
+              required
+              placeholder="Enter your M Number"
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="password">Password:</label> {/* Password input for registration */}
+            <input
+              type="password"
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              placeholder="Create a password"
+            />
+          </div>
+          <button type="submit" className="btn-register">
+            Register
+          </button>
+        </form>
+        <button onClick={onBackToLogin} className="btn-back-to-login">
+          Back to Login
         </button>
-      </form>
-      <button onClick={onBackToLogin} className="btn-back-to-login">
-        Back to Login
-      </button>
+      </div>
     </div>
   );
 }

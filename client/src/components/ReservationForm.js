@@ -8,7 +8,6 @@ function ReservationForm({ spot, userID, onSuccess, onCancel, selectedDate }) {
   const [endTime, setEndTime] = useState("");
   const [unavailableSlots, setUnavailableSlots] = useState([]);
 
-  // Helper function to convert 24-hour time to 12-hour format
   const convertTo12HourFormat = (time) => {
     const [hourStr, minute] = time.split(":");
     let hour = parseInt(hourStr, 10);
@@ -129,67 +128,69 @@ function ReservationForm({ spot, userID, onSuccess, onCancel, selectedDate }) {
   };
 
   return (
-    <div className="reservation-container">
-      <h2>Reserve Spot {spot.spotID}</h2>
-      <form onSubmit={handleSubmit} className="reservation-form">
-        <div className="form-group">
-          <label htmlFor="startTime">Start Time:</label>
-          <select
-            id="startTime"
-            value={startTime}
-            onChange={(e) => setStartTime(e.target.value)}
-            required
-          >
-            <option value="" disabled>
-              Select Start Time
-            </option>
-            {startTimeOptions.map((option, index) => (
-              <option key={index} value={option}>
-                {convertTo12HourFormat(option)}
+    <div className="reservationform-background">
+      <div className="reservation-container">
+        <h2>Reserve Spot {spot.spotID}</h2>
+        <form onSubmit={handleSubmit} className="reservation-form">
+          <div className="form-group">
+            <label htmlFor="startTime">Start Time:</label>
+            <select
+              id="startTime"
+              value={startTime}
+              onChange={(e) => setStartTime(e.target.value)}
+              required
+            >
+              <option value="" disabled>
+                Select Start Time
               </option>
-            ))}
-          </select>
-        </div>
-        <div className="form-group">
-          <label htmlFor="endTime">End Time:</label>
-          <select
-            id="endTime"
-            value={endTime}
-            onChange={(e) => setEndTime(e.target.value)}
-            required
-          >
-            <option value="" disabled>
-              Select End Time
-            </option>
-            {endTimeOptions.map((option, index) => (
-              <option key={index} value={option}>
-                {convertTo12HourFormat(option)}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="unavailable-times">
-          <h3>Unavailable Times:</h3>
-          {unavailableSlots.length > 0 ? (
-            <ul>
-              {unavailableSlots.map((slot, index) => (
-                <li key={index}>
-                  {convertTo12HourFormat(slot.startTime)} -{" "}
-                  {convertTo12HourFormat(slot.endTime)}
-                </li>
+              {startTimeOptions.map((option, index) => (
+                <option key={index} value={option}>
+                  {convertTo12HourFormat(option)}
+                </option>
               ))}
-            </ul>
-          ) : (
-            <p>No reservations for this day.</p>
-          )}
-        </div>
-        <button type="submit" className="btn-reserve">
-          Reserve Spot
-        </button>
-        <button type="button" onClick={onCancel} className="btn-cancel">
-          Cancel
-        </button>
-      </form>
+            </select>
+          </div>
+          <div className="form-group">
+            <label htmlFor="endTime">End Time:</label>
+            <select
+              id="endTime"
+              value={endTime}
+              onChange={(e) => setEndTime(e.target.value)}
+              required
+            >
+              <option value="" disabled>
+                Select End Time
+              </option>
+              {endTimeOptions.map((option, index) => (
+                <option key={index} value={option}>
+                  {convertTo12HourFormat(option)}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="unavailable-times">
+            <h3>Unavailable Times:</h3>
+            {unavailableSlots.length > 0 ? (
+              <ul>
+                {unavailableSlots.map((slot, index) => (
+                  <li key={index}>
+                    {convertTo12HourFormat(slot.startTime)} -{" "}
+                    {convertTo12HourFormat(slot.endTime)}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p>No reservations for this day.</p>
+            )}
+          </div>
+          <button type="submit" className="btn-reserve">
+            Reserve Spot
+          </button>
+          <button type="button" onClick={onCancel} className="btn-cancel">
+            Cancel
+          </button>
+        </form>
+      </div>
     </div>
   );
 }

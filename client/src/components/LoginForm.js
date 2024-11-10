@@ -44,41 +44,43 @@ function LoginForm({ onLogin, onGoToRegister }) {
   };
 
   return (
-    <div className="login-container">
-      <h1>User Login</h1>
-      <form onSubmit={handleSubmit} className="login-form">
-        <div className="form-group">
-          <label htmlFor="mNumber">M Number:</label>
-          <input
-            type="text"
-            id="mNumber"
-            value={mNumber}
-            onChange={(e) => setMNumber(e.target.value)}
-            required
-            placeholder="Enter your M Number"
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="password">Password:</label>
-          <input
-            type="password"
-            id="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            placeholder="Enter your password"
-          />
-        </div>
-        <button type="submit" className="btn-login">
-          Login
-        </button>
-      </form>
-      <p className="register-link">
-        Don't have an account?{" "}
-        <button onClick={onGoToRegister} className="btn-register-link">
-          Register here
-        </button>
-      </p>
+    <div className="login-background">
+      <div className="login-container">
+        <h1>User Login</h1>
+        <form onSubmit={handleSubmit} className="login-form">
+          <div className="form-group">
+            <label htmlFor="mNumber">M Number:</label>
+            <input
+              type="text"
+              id="mNumber"
+              value={mNumber}
+              onChange={(e) => setMNumber(e.target.value)}
+              required
+              placeholder="Enter your M Number"
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="password">Password:</label>
+            <input
+              type="password"
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              placeholder="Enter your password"
+            />
+          </div>
+          <button type="submit" className="btn-login">
+            Login
+          </button>
+        </form>
+        <p className="register-link">
+          Don't have an account?{" "}
+          <button onClick={onGoToRegister} className="btn-register-link">
+            Register here
+          </button>
+        </p>
+      </div>
     </div>
   );
 }

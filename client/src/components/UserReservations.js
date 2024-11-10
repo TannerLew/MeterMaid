@@ -100,51 +100,53 @@ function UserReservations({ userID, reservationsUpdated, onClose }) {
 
   return (
     <div className="reservations-container">
-      <div className="reservations-header">
-        <h2>My Reservations</h2>
-        <button onClick={onClose} className="close-reservations-button">
-          X
-        </button>
-      </div>
-      {reservations.length > 0 ? (
-        <table className="reservations-table">
-          <thead>
-            <tr>
-              <th>Reservation ID</th>
-              <th>Spot ID</th>
-              <th>Date</th>
-              <th>Start Time</th>
-              <th>End Time</th>
-              <th>Status</th>
-              <th>Cancel</th>
-            </tr>
-          </thead>
-          <tbody>
-            {reservations.map((res) => (
-              <tr key={res.reservationID}>
-                <td>{res.reservationID}</td>
-                <td>{res.spotID}</td>
-                <td>{formatDate(res.startTime)}</td>
-                <td>{formatTime(res.startTime)}</td>
-                <td>{formatTime(res.endTime)}</td>
-                <td>{res.status}</td>
-                <td>
-                  <button
-                    onClick={() =>
-                      handleCancelReservation(res.reservationID)
-                    }
-                    className="btn-cancel-reservation"
-                  >
-                    Cancel
-                  </button>
-                </td>
+      <div className="reservations-container">
+        <div className="reservations-header">
+          <h2>My Reservations</h2>
+          <button onClick={onClose} className="close-reservations-button">
+            X
+          </button>
+        </div>
+        {reservations.length > 0 ? (
+          <table className="reservations-table">
+            <thead>
+              <tr>
+                <th>Reservation ID</th>
+                <th>Spot ID</th>
+                <th>Date</th>
+                <th>Start Time</th>
+                <th>End Time</th>
+                <th>Status</th>
+                <th>Cancel</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      ) : (
-        <p>You have no active reservations.</p>
-      )}
+            </thead>
+            <tbody>
+              {reservations.map((res) => (
+                <tr key={res.reservationID}>
+                  <td>{res.reservationID}</td>
+                  <td>{res.spotID}</td>
+                  <td>{formatDate(res.startTime)}</td>
+                  <td>{formatTime(res.startTime)}</td>
+                  <td>{formatTime(res.endTime)}</td>
+                  <td>{res.status}</td>
+                  <td>
+                    <button
+                      onClick={() =>
+                        handleCancelReservation(res.reservationID)
+                      }
+                      className="btn-cancel-reservation"
+                    >
+                      Cancel
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <p>You have no active reservations.</p>
+        )}
+      </div>
     </div>
   );
 }

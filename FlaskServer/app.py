@@ -7,7 +7,7 @@ app = Flask(__name__)
 CORS(app)
 
 # Database configuration
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:Tanner1121@localhost/ParkingLotDB'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:TokyoMachine30%21@localhost/ParkingLotDB'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
