@@ -160,12 +160,13 @@ function App() {
               min={today}
               className="date-input"
               required
+              onKeyDown={(e) => e.preventDefault()} // Prevents typing
             />
           </div>
           <ParkingSpots
             parkingSpots={parkingSpots}
             handleSpotClick={handleSpotClick}
-            selectedDate={selectedDate} // Pass selectedDate to ParkingSpots
+            selectedDate={selectedDate}
           />
           {selectedSpot && selectedDate && (
             <ReservationForm
