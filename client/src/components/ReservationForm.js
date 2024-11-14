@@ -7,7 +7,7 @@ function getDateFromDateString(dateString) {
   return new Date(year, month - 1, day);
 }
 
-function ReservationForm({ spot, userID, onSuccess, onCancel, selectedDate }) {
+function ReservationForm({ spot, userID, onSuccess, onCancel, selectedDate,reservationsUpdated }) {
   const [startTimeOptions, setStartTimeOptions] = useState([]);
   const [endTimeOptions, setEndTimeOptions] = useState([]);
   const [startTime, setStartTime] = useState("");
@@ -97,7 +97,7 @@ function ReservationForm({ spot, userID, onSuccess, onCancel, selectedDate }) {
     } else {
       setUnavailableSlots([]);
     }
-  }, [selectedDate, spot]);
+  }, [selectedDate, spot, reservationsUpdated]);
 
   const handleSubmit = (event) => {
     event.preventDefault();

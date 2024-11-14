@@ -7,6 +7,7 @@ import Header from "./components/Header";
 import "./App.css";
 
 // Function to get today's date in 'YYYY-MM-DD' format in local time
+// This avoids issues with UTC and local date differences
 function getTodayDate() {
   const today = new Date();
   const year = today.getFullYear();
@@ -16,32 +17,39 @@ function getTodayDate() {
 }
 
 function App() {
-  const today = getTodayDate();
+  const today = getTodayDate(); // Get today's date
   console.log(`Today's Date coming from app: ${today}`);
-  const [parkingSpots, setParkingSpots] = useState([]);
-  const [selectedSpot, setSelectedSpot] = useState(null);
-  const [loggedInUserID, setLoggedInUserID] = useState(null);
-  const [firstName, setFirstName] = useState("");
-  const [currentPage, setCurrentPage] = useState("login");
-  const [reservationsUpdated, setReservationsUpdated] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(today);
-  const [userReservations, setUserReservations] = useState([]);
 
-  // Fetch parking spots availability based on the selected date
+  // State variables for the app
+  const [parkingSpots, setParkingSpots] = useState([]); // List of parking spots
+  const [selectedSpot, setSelectedSpot] = useState(null); // Currently selected parking spot
+  const [loggedInUserID, setLoggedInUserID] = useState(null); // ID of the logged-in user
+  const [firstName, setFirstName] = useState(""); // First name of the logged-in user
+  const [currentPage, setCurrentPage] = useState("login"); // Current page (login, register, or reservations)
+  const [reservationsUpdated, setReservationsUpdated] = useState(false); // Triggers updates to reservations
+  const [selectedDate, setSelectedDate] = useState(today); // Date selected for viewing or making reservations
+  const [userReservations, setUserReservations] = useState([]); // Reservations of the logged-in user
+
+  // Fetch parking spot availability for the selected date
   const fetchParkingSpots = useCallback(() => {
     fetch(`http://localhost:5000/parking_spots?date=${selectedDate}`)
       .then((response) => response.json())
       .then((data) => {
-        setParkingSpots(data);
+        setParkingSpots(data); // Update parking spots with fetched data
       })
       .catch((error) => console.error("Error fetching parking spots:", error));
   }, [selectedDate]);
 
+  // Fetch parking spots each time the selected date changes
   useEffect(() => {
     fetchParkingSpots();
   }, [fetchParkingSpots]);
 
-  // Wrap cancelReservation in useCallback
+  useEffect(() => {
+    fetchParkingSpots();
+  }, [fetchParkingSpots, reservationsUpdated]);
+
+  // Function to cancel a reservation, wrapped in useCallback for memoization
   const cancelReservation = useCallback(
     (reservationID) => {
       fetch("http://localhost:5000/cancel_reservation", {
@@ -52,7 +60,7 @@ function App() {
         body: JSON.stringify({ reservationID, userID: loggedInUserID }),
       })
         .then((response) => response.json())
-        .then((data) => {
+        .then(() => {
           console.log(`Reservation ${reservationID} canceled.`);
           // Toggle reservationsUpdated to trigger re-fetch
           setReservationsUpdated((prev) => !prev);
@@ -62,49 +70,52 @@ function App() {
         });
     },
     [loggedInUserID]
-  ); // Include loggedInUserID in dependencies
+  );
 
-  // Fetch user reservations
+  // Fetch reservations for the logged-in user
   const fetchUserReservations = useCallback(() => {
-    if (!loggedInUserID) return;
+    if (!loggedInUserID) return; // Exit if no user is logged in
 
     fetch(`http://localhost:5000/user_reservations/${loggedInUserID}`)
       .then((response) => response.json())
       .then((data) => {
         const now = new Date();
 
-        // Filter out expired reservations and auto-cancel them
+        // Filter active reservations, auto-cancel expired ones
         const activeReservations = data.filter((res) => {
           const endTime = new Date(res.endTime);
           if (endTime < now) {
-            // Auto-cancel reservation
-            cancelReservation(res.reservationID);
+            cancelReservation(res.reservationID); // Auto-cancel expired reservation
             return false;
           }
           return true;
         });
 
-        setUserReservations(activeReservations);
+        setUserReservations(activeReservations); // Update active reservations list
       })
       .catch((error) => {
         console.error("Error fetching reservations:", error);
       });
   }, [loggedInUserID, cancelReservation]); // Include cancelReservation in dependencies
 
+  // Fetch user reservations when they log in or reservations are updated
   useEffect(() => {
     fetchUserReservations();
-  }, [fetchUserReservations, reservationsUpdated]); // Trigger re-fetch when reservationsUpdated changes
+  }, [fetchUserReservations, reservationsUpdated]);
 
+  // Set the selected parking spot when clicked
   const handleSpotClick = (spot) => {
     setSelectedSpot(spot);
   };
 
+  // Handle a successful reservation by refreshing parking spots and reservations
   const handleReservationSuccess = () => {
-    setReservationsUpdated((prev) => !prev);
-    setSelectedSpot(null);
-    fetchParkingSpots(); // Refresh spots to update their status
+    setReservationsUpdated((prev) => !prev); // Trigger reservations update
+    setSelectedSpot(null); // Clear selected spot
+    fetchParkingSpots(); // Refresh parking spot availability
   };
 
+  // Set user data on login and switch to reservations page
   const handleLogin = (userID, userFirstName) => {
     setLoggedInUserID(userID);
     setFirstName(userFirstName);
@@ -112,6 +123,7 @@ function App() {
     setReservationsUpdated((prev) => !prev); // Trigger initial reservations fetch
   };
 
+  // Handle logout by clearing user data and resetting to login page
   const handleLogout = () => {
     setLoggedInUserID(null);
     setFirstName("");
@@ -120,14 +132,17 @@ function App() {
     alert("Logged out successfully");
   };
 
+  // Navigate to registration page
   const handleGoToRegister = () => {
     setCurrentPage("register");
   };
 
+  // Navigate back to login page from registration page
   const handleBackToLogin = () => {
     setCurrentPage("login");
   };
 
+  // Confirm and cancel a reservation
   const handleCancelReservation = (reservationID) => {
     if (window.confirm("Are you sure you want to cancel this reservation?")) {
       cancelReservation(reservationID);
@@ -160,7 +175,7 @@ function App() {
               min={today}
               className="date-input"
               required
-              onKeyDown={(e) => e.preventDefault()} // Prevents typing
+              onKeyDown={(e) => e.preventDefault()} 
             />
           </div>
           <ParkingSpots
@@ -169,13 +184,14 @@ function App() {
             selectedDate={selectedDate}
           />
           {selectedSpot && selectedDate && (
-            <ReservationForm
-              spot={selectedSpot}
-              userID={loggedInUserID}
-              onSuccess={handleReservationSuccess}
-              onCancel={() => setSelectedSpot(null)}
-              selectedDate={selectedDate}
-            />
+           <ReservationForm
+           spot={selectedSpot}
+           userID={loggedInUserID}
+           onSuccess={handleReservationSuccess}
+           onCancel={() => setSelectedSpot(null)}
+           selectedDate={selectedDate}
+           reservationsUpdated={reservationsUpdated} 
+         />
           )}
         </div>
       )}
