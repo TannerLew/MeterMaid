@@ -7,7 +7,15 @@ function getDateFromDateString(dateString) {
   return new Date(year, month - 1, day);
 }
 
-function ReservationForm({ spot, userID, onSuccess, onCancel, selectedDate,reservationsUpdated }) {
+function ReservationForm({
+  spot,
+  userID,
+  onSuccess,
+  onCancel,
+  selectedDate,
+  reservationsUpdated,
+  activeReservationsCount, // Receive the prop
+}) {
   const [startTimeOptions, setStartTimeOptions] = useState([]);
   const [endTimeOptions, setEndTimeOptions] = useState([]);
   const [startTime, setStartTime] = useState("");
@@ -26,12 +34,8 @@ function ReservationForm({ spot, userID, onSuccess, onCancel, selectedDate,reser
   const generateTimeOptions = (selectedDate) => {
     const now = new Date();
     const selected = getDateFromDateString(selectedDate);
-    console.log(`Today's Date: ${now}`);
-    console.log(`Selected Date: ${selected}`);
     // Check if the selected date is today
     const isToday = selected.toDateString() === now.toDateString();
-
-    console.log(`Is Selected Date Today? ${isToday}`);
 
     const options = [];
     let startHour = 0;
@@ -64,7 +68,7 @@ function ReservationForm({ spot, userID, onSuccess, onCancel, selectedDate,reser
     return options;
   };
 
-  // Set available time options for start and end times based on the selected date
+  // Set available time options for start and end times
   useEffect(() => {
     if (selectedDate) {
       const timeOptions = generateTimeOptions(selectedDate);
@@ -73,7 +77,8 @@ function ReservationForm({ spot, userID, onSuccess, onCancel, selectedDate,reser
     }
   }, [selectedDate]);
 
-  // Fetch unavailable times when the selected date or spot changes
+  // Fetch unavailable times
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (selectedDate && spot) {
       fetch(
@@ -81,14 +86,6 @@ function ReservationForm({ spot, userID, onSuccess, onCancel, selectedDate,reser
       )
         .then((response) => response.json())
         .then((data) => {
-          console.log(
-            "Unavailable times for spot",
-            spot.spotID,
-            "on date",
-            selectedDate,
-            ":",
-            data.unavailableSlots
-          );
           setUnavailableSlots(data.unavailableSlots || []);
         })
         .catch((error) => {
@@ -97,8 +94,9 @@ function ReservationForm({ spot, userID, onSuccess, onCancel, selectedDate,reser
     } else {
       setUnavailableSlots([]);
     }
-  }, [selectedDate, spot, reservationsUpdated]);
+  }, [selectedDate, spot, reservationsUpdated]); // Include reservationsUpdated
 
+  // Handle form submission
   const handleSubmit = (event) => {
     event.preventDefault();
 
@@ -110,7 +108,7 @@ function ReservationForm({ spot, userID, onSuccess, onCancel, selectedDate,reser
       return;
     }
 
-    // Check if selected time range overlaps with unavailable slots
+    // Check for time overlap with unavailable slots
     const reservationStart = parseInt(startTime.replace(":", ""), 10);
     const reservationEnd = parseInt(endTime.replace(":", ""), 10);
     for (const slot of unavailableSlots) {
@@ -159,6 +157,19 @@ function ReservationForm({ spot, userID, onSuccess, onCancel, selectedDate,reser
         alert("An error occurred");
       });
   };
+
+  // If user has reached maximum reservations
+  if (activeReservationsCount >= 3) {
+    return (
+      <div className="reservation-container">
+        <h2>Reserve Spot {spot.spotID}</h2>
+        <p>You have reached the maximum of 3 active reservations.</p>
+        <button type="button" onClick={onCancel} className="btn-cancel">
+          Close
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="reservation-container">

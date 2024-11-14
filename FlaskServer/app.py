@@ -214,6 +214,16 @@ def reserve_spot():
     if duration > 8:
         return jsonify({'message': 'Reservation cannot exceed 8 hours'}), 400
 
+    # Check if the user already has 3 active reservations
+    active_reservations_count = Reservations.query.filter(
+        Reservations.userID == userID,
+        Reservations.status == 'Active',
+        Reservations.endTime > datetime.now()
+    ).count()
+
+    if active_reservations_count >= 3:
+        return jsonify({'message': 'You cannot have more than 3 active reservations'}), 400
+
     overlap = Reservations.query.filter(
         Reservations.spotID == spotID,
         Reservations.status == 'Active',
