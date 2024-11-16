@@ -14,7 +14,6 @@ CREATE TABLE IF NOT EXISTS Users (
 -- Create ParkingSpots table
 CREATE TABLE IF NOT EXISTS ParkingSpots (
     spotID INT AUTO_INCREMENT PRIMARY KEY
- 
 );
 
 -- Insert 15 parking spots
@@ -23,24 +22,32 @@ INSERT INTO ParkingSpots () VALUES
 (), (), (), (), (),
 (), (), (), (), ();
 
+-- Create Cars table
+CREATE TABLE IF NOT EXISTS Cars (
+    carID INT AUTO_INCREMENT PRIMARY KEY,
+    userID INT NOT NULL,
+    make VARCHAR(40) NOT NULL,
+    model VARCHAR(40) NOT NULL,
+    Color VARCHAR (20) NOT NULL,
+    year INT NOT NULL,
+    licensePlate VARCHAR(20) NOT NULL UNIQUE,
+    FOREIGN KEY (userID) REFERENCES Users(userID) ON DELETE CASCADE
+);
+
 -- Create Reservations table
 CREATE TABLE IF NOT EXISTS Reservations (
     reservationID INT AUTO_INCREMENT PRIMARY KEY,
     userID INT NOT NULL,
     spotID INT NOT NULL,
+    carID INT NOT NULL,
     startTime DATETIME NOT NULL,
     endTime DATETIME NOT NULL,
     status ENUM('Active', 'Canceled', 'Expired') NOT NULL DEFAULT 'Active',
-    FOREIGN KEY (userID) REFERENCES Users(userID),
-    FOREIGN KEY (spotID) REFERENCES ParkingSpots(spotID)
+    FOREIGN KEY (userID) REFERENCES Users(userID) ON DELETE CASCADE,
+    FOREIGN KEY (spotID) REFERENCES ParkingSpots(spotID) ON DELETE CASCADE,
+    FOREIGN KEY (carID) REFERENCES Cars(carID) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS CARS (
-    CarID INT AUTO_INCREMENT PRIMARY KEY,
-    UserID INT NOT NULL,
-    MAKE VARCHAR 40 NOT NULL,
-    MODEL VARCHAR 40 NOT NULL,
-    #COLOR VARCHAR 
-    YEAR INT NOT NULL,
-    FOREIGN KEY (UserID) REFERENCES Users(userID),
-);
+
+
+

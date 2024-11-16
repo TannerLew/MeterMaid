@@ -1,9 +1,12 @@
+// Frontend (`React`) - App.js
+
 import React, { useState, useEffect, useCallback } from "react";
 import UserForm from "./components/UserForm";
 import LoginForm from "./components/LoginForm";
 import ParkingSpots from "./components/ParkingSpots";
 import ReservationForm from "./components/ReservationForm";
 import Header from "./components/Header";
+import AddCarForm from "./components/AddCarForm"; // Import AddCarForm
 import "./App.css";
 
 // Function to get today's date in 'YYYY-MM-DD' format in local time
@@ -28,6 +31,8 @@ function App() {
   const [reservationsUpdated, setReservationsUpdated] = useState(false);
   const [selectedDate, setSelectedDate] = useState(today);
   const [userReservations, setUserReservations] = useState([]);
+  const [userCars, setUserCars] = useState([]); // New state for user cars
+  const [showAddCarForm, setShowAddCarForm] = useState(false); // Control AddCarForm visibility
 
   // Fetch parking spots availability
   const fetchParkingSpots = useCallback(() => {
@@ -68,28 +73,47 @@ function App() {
   // Fetch user reservations
   const fetchUserReservations = useCallback(() => {
     if (!loggedInUserID) return;
-
+  
     fetch(`http://localhost:5000/user_reservations/${loggedInUserID}`)
       .then((response) => response.json())
       .then((data) => {
         const now = new Date();
-
+  
         // Filter active reservations
         const activeReservations = data.filter((res) => {
           const endTime = new Date(res.endTime);
           return endTime > now;
         });
-
+  
         setUserReservations(activeReservations);
       })
       .catch((error) => {
         console.error("Error fetching reservations:", error);
       });
   }, [loggedInUserID]);
+  
 
   useEffect(() => {
     fetchUserReservations();
   }, [fetchUserReservations, reservationsUpdated]); // Added reservationsUpdated
+
+  // Fetch user cars
+  const fetchUserCars = useCallback(() => {
+    if (!loggedInUserID) return;
+
+    fetch(`http://localhost:5000/user_cars/${loggedInUserID}`)
+      .then((response) => response.json())
+      .then((data) => {
+        setUserCars(data);
+      })
+      .catch((error) => {
+        console.error("Error fetching user cars:", error);
+      });
+  }, [loggedInUserID]);
+
+  useEffect(() => {
+    fetchUserCars();
+  }, [fetchUserCars]);
 
   // Handle spot click
   const handleSpotClick = (spot) => {
@@ -109,6 +133,7 @@ function App() {
     setFirstName(userFirstName);
     setCurrentPage("reservations");
     setReservationsUpdated((prev) => !prev);
+    fetchUserCars();
   };
 
   // Handle logout
@@ -117,6 +142,7 @@ function App() {
     setFirstName("");
     setCurrentPage("login");
     setUserReservations([]);
+    setUserCars([]);
     alert("Logged out successfully");
   };
 
@@ -136,6 +162,27 @@ function App() {
     }
   };
 
+  // Add car handler
+  const handleAddCar = () => {
+    setShowAddCarForm(true);
+  };
+
+  const handleCarAdded = () => {
+    setShowAddCarForm(false);
+    fetchUserCars();
+  };
+
+  const handleCancelAddCar = () => {
+    setShowAddCarForm(false);
+  };
+
+  // Delete car handler
+  const handleDeleteCar = () => {
+    fetchUserCars();
+    fetchUserReservations();
+    fetchParkingSpots();
+  };
+
   return (
     <div>
       <Header
@@ -143,6 +190,9 @@ function App() {
         onLogout={handleLogout}
         reservations={userReservations}
         onCancelReservation={handleCancelReservation}
+        cars={userCars}
+        onAddCar={handleAddCar}
+        onDeleteCar={handleDeleteCar} // Updated to handle refresh
       />
       {currentPage === "login" && (
         <LoginForm onLogin={handleLogin} onGoToRegister={handleGoToRegister} />
@@ -178,7 +228,15 @@ function App() {
               onCancel={() => setSelectedSpot(null)}
               selectedDate={selectedDate}
               reservationsUpdated={reservationsUpdated}
-              activeReservationsCount={userReservations.length} // Pass active reservations count
+              activeReservationsCount={userReservations.length}
+              userCars={userCars} // Pass user cars to ReservationForm
+            />
+          )}
+          {showAddCarForm && (
+            <AddCarForm
+              userID={loggedInUserID}
+              onCarAdded={handleCarAdded}
+              onCancel={handleCancelAddCar}
             />
           )}
         </div>

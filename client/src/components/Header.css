@@ -1,146 +1,264 @@
-/* Header.css */
-
+/* Header Container */
 .app-header {
   display: flex;
   align-items: center;
-  background-color: #1976d2;
-  color: white;
-  padding: 10px 20px;
+  justify-content: space-between; /* Distribute space between sections */
+  background-color: #1e3d59; /* Dark Blue Background */
+  color: #f5f5f5; /* Light Gray Text for Contrast */
+  padding: 15px 30px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+/* Header Left (Welcome Text) */
 .header-left {
   flex: 1;
+  font-size: 18px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Clean Sans-Serif Font */
 }
 
 .header-left span {
-  font-size: 18px;
+  font-weight: 500; /* Medium Weight for Emphasis */
+  color: #f5f5f5; /* Ensure text is readable */
+  transition: color 0.3s ease;
 }
 
+.header-left span:hover {
+  color: #6ec1e4; /* Light Blue Highlight on Hover */
+}
+
+/* Header Center (MeterMaid Title) */
 .header-center {
-  flex: 1;
+  flex: 2;
   text-align: center;
 }
 
 .header-center h1 {
   margin: 0;
-  font-size: 24px;
+  font-size: 32px;
+  font-family: 'Georgia', serif; /* Elegant Serif Font for Title */
+  font-weight: 700; /* Bold Weight */
+  color: #ffffff; /* Accent Color to Stand Out */
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); /* Subtle Shadow for Depth */
+  transition: transform 0.3s ease;
 }
 
+.header-center h1:hover {
+  transform: scale(1.05); /* Slight Zoom on Hover */
+}
+
+/* Header Right (Dropdowns and Buttons) */
 .header-right {
   flex: 1;
   text-align: right;
   display: flex;
   align-items: center;
   justify-content: flex-end;
+  gap: 15px; /* Space between buttons */
 }
 
-.btn-logout {
-  background-color: transparent;
-  border: 1px solid white;
-  color: white;
-  padding: 6px 12px;
-  border-radius: 4px;
-  cursor: pointer;
-  margin-left: 10px;
-}
-
-.btn-logout:hover {
-  background-color: rgba(255, 255, 255, 0.2);
-}
-
-/* Dropdown styles */
+/* Dropdown Styles */
 .dropdown {
   position: relative;
   display: inline-block;
 }
 
 .dropdown-button {
-  background-color: transparent;
-  border: 1px solid white;
-  color: white;
-  padding: 6px 12px;
-  border-radius: 4px;
+  background-color: #1e3d59; /* Match Header Background */
+  border: 2px solid #6ec1e4; /* Blue Accent Border */
+  color: #f5f5f5; /* Light Text */
+  padding: 8px 16px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 5px;
   cursor: pointer;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .dropdown-button:hover {
-  background-color: rgba(255, 255, 255, 0.2);
+  background-color: #6ec1e4; /* Blue Background on Hover */
+  color: #1e3d59; /* Dark Text for Contrast */
+  border-color: #f5f5f5; /* Light Border on Hover */
 }
 
+.dropdown-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(110, 193, 228, 0.5); /* Blue Focus Ring */
+}
+
+/* Dropdown Menu */
 .dropdown-menu {
-  display: block;
+  display: none; /* Hidden by default */
   position: absolute;
   right: 0;
-  background-color: white;
-  width: 400px;
-  max-height: 400px;
+  background-color: #ffffff; /* White Background for Contrast */
+  width: 450px;
+  max-height: 500px;
   overflow-y: auto;
   box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
-  z-index: 1;
+  z-index: 1000;
   border-radius: 8px;
-  margin-top: 8px;
-  padding: 10px;
-  color: black;
-  opacity: 0; /* Initially hidden */
-  transform: translateY(-10px); /* Slide up by default */
-  transition: opacity 0.3s ease, transform 0.3s ease; /* Smooth transition */
+  margin-top: 10px;
+  padding: 15px;
+  color: #333333; /* Dark Text for Readability */
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
 .dropdown-menu.is-open {
+  display: block;
   opacity: 1;
-  transform: translateY(0); /* Slide down when open */
+  transform: translateY(0);
 }
 
-.reservations-table {
+/* Tables Styling */
+.reservations-table,
+.cars-table {
   width: 100%;
   border-collapse: collapse;
+  margin-bottom: 15px;
 }
 
 .reservations-table th,
-.reservations-table td {
+.cars-table th {
+  background-color: #f1f1f1;
+  font-weight: 700;
   padding: 10px;
+  border-bottom: 2px solid #ddd;
   text-align: center;
 }
 
-.reservations-table th {
-  background-color: #f1f1f1;
-  font-weight: bold;
-  border-bottom: 2px solid #ddd;
-}
-
-.reservations-table td {
+.reservations-table td,
+.cars-table td {
+  padding: 10px;
   border-bottom: 1px solid #eee;
+  text-align: center;
 }
 
-.btn-cancel-reservation {
-  padding: 5px 10px;
-  background-color: #e53935;
+/* Action Buttons in Tables */
+.btn-cancel-reservation,
+.btn-delete-car {
+  background-color: #3498db; /* Blue for Actions */
+  color: #ffffff;
   border: none;
-  color: white;
+  padding: 6px 12px;
   border-radius: 4px;
   cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.3s ease;
 }
 
-.btn-cancel-reservation:hover {
-  background-color: #c62828;
+.btn-cancel-reservation:hover,
+.btn-delete-car:hover {
+  background-color: #2980b9; /* Darker Blue on Hover */
 }
 
-.no-reservations {
+/* Add Car Button in Dropdown */
+.btn-add-car {
+  background-color: #43a047; /* Green for Positive Actions */
+  color: #ffffff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  width: 100%;
+  transition: background-color 0.3s ease;
+}
+
+.btn-add-car:hover {
+  background-color: #388e3c; /* Darker Green on Hover */
+}
+
+/* Logout Button */
+.btn-logout {
+  background-color: #3498db; /* Blue for Logout */
+  color: #ffffff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+}
+
+.btn-logout:hover {
+  background-color: #2980b9; /* Darker Blue on Hover */
+}
+
+/* No Reservations/Cars Message */
+.no-reservations,
+.no-cars {
   padding: 10px;
   text-align: center;
-  color: #555;
+  color: #555555;
   font-size: 14px;
 }
 
+/* Scrollbar Styling for Dropdown Menus */
 .dropdown-menu::-webkit-scrollbar {
-  width: 6px;
+  width: 8px;
 }
 
 .dropdown-menu::-webkit-scrollbar-thumb {
-  background-color: #ccc;
-  border-radius: 3px;
+  background-color: #cccccc;
+  border-radius: 4px;
 }
 
 .dropdown-menu::-webkit-scrollbar-thumb:hover {
-  background-color: #aaa;
+  background-color: #aaaaaa;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .app-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .header-center {
+    margin: 10px 0;
+  }
+
+  .header-right {
+    width: 100%;
+    justify-content: flex-start;
+    gap: 10px;
+  }
+
+  .dropdown-menu {
+    width: 100%;
+    right: auto;
+    left: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-left {
+    font-size: 16px;
+  }
+
+  .header-center h1 {
+    font-size: 28px;
+  }
+
+  .dropdown-button,
+  .btn-add-car,
+  .btn-cancel-reservation,
+  .btn-delete-car,
+  .btn-logout {
+    font-size: 14px;
+    padding: 6px 12px;
+  }
+
+  .reservations-table th,
+  .reservations-table td,
+  .cars-table th,
+  .cars-table td {
+    padding: 8px;
+    font-size: 12px;
+  }
 }

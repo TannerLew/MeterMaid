@@ -1,13 +1,29 @@
 import React, { useState } from "react";
 import "./Header.css";
 
-function Header({ firstName, onLogout, reservations, onCancelReservation }) {
-  const [showDropdown, setShowDropdown] = useState(false);
+function Header({
+  firstName,
+  onLogout,
+  reservations,
+  onCancelReservation,
+  cars,
+  onAddCar,
+  onDeleteCar,
+}) {
+  const [showReservationsDropdown, setShowReservationsDropdown] = useState(false);
+  const [showCarsDropdown, setShowCarsDropdown] = useState(false);
 
-  const handleDropdownClick = () => {
-    setShowDropdown((prev) => !prev);
+  const handleReservationsDropdownClick = () => {
+    setShowReservationsDropdown((prev) => !prev);
+    setShowCarsDropdown(false);
   };
 
+  const handleCarsDropdownClick = () => {
+    setShowCarsDropdown((prev) => !prev);
+    setShowReservationsDropdown(false);
+  };
+
+  // Helper functions to format date and time
   const formatDate = (dateTime) => {
     const dateObj = new Date(dateTime);
     return dateObj.toLocaleDateString("en-US", {
@@ -26,6 +42,31 @@ function Header({ firstName, onLogout, reservations, onCancelReservation }) {
     });
   };
 
+  const handleDeleteCar = (carID) => {
+    // Show confirmation dialog before deleting
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this car? This will also delete all reservations related to it."
+    );
+
+    if (confirmed) {
+      fetch(`http://localhost:5000/delete_car/${carID}`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.message) {
+            alert(data.message);
+            onDeleteCar(carID); // Notify parent to refresh cars and reservations
+          }
+        })
+        .catch((error) => {
+          console.error("Error deleting car:", error);
+          alert("An error occurred while deleting the car.");
+        });
+    }
+  };
+
   return (
     <header className="app-header">
       <div className="header-left">
@@ -37,14 +78,21 @@ function Header({ firstName, onLogout, reservations, onCancelReservation }) {
       <div className="header-right">
         {firstName && (
           <>
+            {/* Reservations Dropdown */}
             <div className="dropdown">
-              <button onClick={handleDropdownClick} className="dropdown-button">
-                Reservations ▼
+              <button
+                onClick={handleReservationsDropdownClick}
+                className="dropdown-button"
+                aria-haspopup="true"
+                aria-expanded={showReservationsDropdown}
+              >
+                &#128665; Reservations
               </button>
               <div
                 className={`dropdown-menu reservations-dropdown ${
-                  showDropdown ? "is-open" : ""
+                  showReservationsDropdown ? "is-open" : ""
                 }`}
+                role="menu"
               >
                 {reservations.length > 0 ? (
                   <table className="reservations-table">
@@ -53,7 +101,7 @@ function Header({ firstName, onLogout, reservations, onCancelReservation }) {
                         <th>Spot #</th>
                         <th>Date</th>
                         <th>Time</th>
-                        <th> </th>
+                        <th>Action</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -62,17 +110,15 @@ function Header({ firstName, onLogout, reservations, onCancelReservation }) {
                           <td>{res.spotID}</td>
                           <td>{formatDate(res.startTime)}</td>
                           <td>
-                            {formatTime(res.startTime)} -{" "}
-                            {formatTime(res.endTime)}
+                            {formatTime(res.startTime)} - {formatTime(res.endTime)}
                           </td>
                           <td>
                             <button
-                              onClick={() =>
-                                onCancelReservation(res.reservationID)
-                              }
+                              onClick={() => onCancelReservation(res.reservationID)}
                               className="btn-cancel-reservation"
+                              aria-label={`Cancel reservation at spot ${res.spotID}`}
                             >
-                              Cancel
+                              &#10060; Cancel
                             </button>
                           </td>
                         </tr>
@@ -84,8 +130,68 @@ function Header({ firstName, onLogout, reservations, onCancelReservation }) {
                 )}
               </div>
             </div>
-            <button onClick={onLogout} className="btn-logout">
-              Logout
+
+            {/* Cars Dropdown */}
+            <div className="dropdown">
+              <button
+                onClick={handleCarsDropdownClick}
+                className="dropdown-button"
+                aria-haspopup="true"
+                aria-expanded={showCarsDropdown}
+              >
+                &#128663; My Cars
+              </button>
+              <div
+                className={`dropdown-menu cars-dropdown ${
+                  showCarsDropdown ? "is-open" : ""
+                }`}
+                role="menu"
+              >
+                {cars.length > 0 ? (
+                  <>
+                    <table className="cars-table">
+                      <thead>
+                        <tr>
+                          <th>Year</th>
+                          <th>Make</th>
+                          <th>Model</th>
+                          <th>License Plate</th>
+                          <th>Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {cars.map((car) => (
+                          <tr key={car.carID}>
+                            <td>{car.year}</td>
+                            <td>{car.make}</td>
+                            <td>{car.model}</td>
+                            <td>{car.licensePlate}</td>
+                            <td>
+                              <button
+                                onClick={() => handleDeleteCar(car.carID)}
+                                className="btn-delete-car"
+                                aria-label={`Delete car ${car.make} ${car.model}`}
+                              >
+                                &#128465; Delete
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </>
+                ) : (
+                  <div className="no-cars">No cars added.</div>
+                )}
+                <button onClick={onAddCar} className="btn-add-car">
+                  &#10010; Add Car
+                </button>
+              </div>
+            </div>
+
+            {/* Logout Button */}
+            <button onClick={onLogout} className="btn-logout" aria-label="Logout">
+              &#128682; Logout
             </button>
           </>
         )}

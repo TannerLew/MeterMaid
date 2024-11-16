@@ -1,0 +1,65 @@
+.add-car-form-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.add-car-form {
+  background-color: #fff;
+  padding: 20px;
+  margin: 50px auto;
+  width: 90%;
+  max-width: 500px;
+  border-radius: 8px;
+}
+
+.add-car-form h2 {
+  text-align: center;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  font-weight: bold;
+}
+
+.form-group select,
+.form-group input {
+  width: 100%;
+  padding: 8px;
+  box-sizing: border-box;
+}
+
+.btn-submit,
+.btn-cancel {
+  width: 48%;
+  padding: 10px;
+  margin: 5px 1%;
+  font-size: 1em;
+  cursor: pointer;
+}
+
+.btn-submit {
+  background-color: #007bffc9;
+  color: white;
+  border: none;
+}
+
+.btn-submit:hover {
+  background-color: #007bff;
+}
+
+.btn-cancel {
+  background-color: #ccc;
+  border: none;
+}
+
+.btn-cancel:hover {
+  background-color: #bbb;
+}

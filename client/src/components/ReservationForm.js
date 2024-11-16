@@ -15,12 +15,14 @@ function ReservationForm({
   selectedDate,
   reservationsUpdated,
   activeReservationsCount, // Receive the prop
+  userCars, // Receive user cars as prop
 }) {
   const [startTimeOptions, setStartTimeOptions] = useState([]);
   const [endTimeOptions, setEndTimeOptions] = useState([]);
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
   const [unavailableSlots, setUnavailableSlots] = useState([]);
+  const [selectedCarID, setSelectedCarID] = useState(""); // New state for selected car
 
   const convertTo12HourFormat = (time) => {
     const [hourStr, minute] = time.split(":");
@@ -78,7 +80,6 @@ function ReservationForm({
   }, [selectedDate]);
 
   // Fetch unavailable times
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (selectedDate && spot) {
       fetch(
@@ -99,6 +100,16 @@ function ReservationForm({
   // Handle form submission
   const handleSubmit = (event) => {
     event.preventDefault();
+
+    if (activeReservationsCount >= 3) {
+      alert("You cannot have more than 3 active reservations.");
+      return;
+    }
+
+    if (!selectedCarID) {
+      alert("Please select a car for the reservation.");
+      return;
+    }
 
     const formattedStartTime = `${selectedDate} ${startTime}`;
     const formattedEndTime = `${selectedDate} ${endTime}`;
@@ -128,6 +139,7 @@ function ReservationForm({
     const data = {
       userID: userID,
       spotID: spot.spotID,
+      carID: selectedCarID, // Include selected car
       startTime: formattedStartTime,
       endTime: formattedEndTime,
     };
@@ -145,6 +157,7 @@ function ReservationForm({
           alert("Reservation successful");
           setStartTime("");
           setEndTime("");
+          setSelectedCarID(""); // Reset selected car
           onSuccess();
         } else {
           response.json().then((data) => {
@@ -211,6 +224,27 @@ function ReservationForm({
             ))}
           </select>
         </div>
+
+        {/* Car Selection Dropdown */}
+        <div className="form-group">
+          <label htmlFor="car">Select Car:</label>
+          <select
+            id="car"
+            value={selectedCarID}
+            onChange={(e) => setSelectedCarID(e.target.value)}
+            required
+          >
+            <option value="" disabled>
+              Select Car
+            </option>
+            {userCars.map((car) => (
+              <option key={car.carID} value={car.carID}>
+                {car.year} {car.make} {car.model} - {car.licensePlate}
+              </option>
+            ))}
+          </select>
+        </div>
+
         <div className="unavailable-times">
           <h3>Unavailable Times:</h3>
           {unavailableSlots.length > 0 ? (
@@ -228,9 +262,6 @@ function ReservationForm({
         </div>
         <button type="submit" className="btn-reserve">
           Reserve Spot
-        </button>
-        <button type="button" onClick={onCancel} className="btn-cancel">
-          Cancel
         </button>
       </form>
     </div>

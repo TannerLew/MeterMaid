@@ -15,8 +15,9 @@ DROP TABLE IF EXISTS ParkingSpots;
 -- Drop the Users table
 DROP TABLE IF EXISTS Users;
 
+-- Drop the cars table
+DROP TABLE IF EXISTS Cars;
+
 -- Re-enable foreign key checks
 SET FOREIGN_KEY_CHECKS = 1;
 
--- Optionally, you can drop the database itself if you want to remove everything
--- DROP DATABASE IF EXISTS ParkingLotDB;

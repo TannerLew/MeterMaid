@@ -1,23 +1,25 @@
-/* ReservationForm.css */
-
+/* Reservation Container */
 .reservation-container {
   max-width: 500px;
   margin: 20px auto;
   padding: 20px;
-  background-color: #e8f5e9;
-  border: 1px solid #c8e6c9;
+  background-color: #e3f2fd; /* Light Blue Background */
+  border: 1px solid #90caf9; /* Soft Blue Border */
   border-radius: 8px;
   position: relative;
-  z-index: 1; /* Bring it above the background */
+  z-index: 1;
 }
 
 .reservation-container h2 {
   text-align: center;
   margin-bottom: 20px;
-  color: #2e7d32;
+  color: #1e88e5; /* Darker Blue for Title */
+  font-family: 'Georgia', serif;
+  font-weight: 700;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
 }
 
-/* Other styles for the form elements */
+/* Form Elements */
 .reservation-form .form-group {
   margin-bottom: 20px;
 }
@@ -26,6 +28,7 @@
   display: block;
   margin-bottom: 8px;
   color: #333;
+  font-weight: 600;
 }
 
 .reservation-form input,
@@ -35,21 +38,25 @@
   box-sizing: border-box;
   border: 1px solid #ccc;
   border-radius: 4px;
+  font-size: 16px;
+  transition: border-color 0.3s ease;
 }
 
 .reservation-form input:focus,
 .reservation-form select:focus {
-  border-color: #2e7d32;
+  border-color: #1e88e5; /* Blue on Focus */
   outline: none;
 }
 
+/* Unavailable Times */
 .unavailable-times {
   margin-top: 20px;
 }
 
 .unavailable-times h3 {
   margin-bottom: 10px;
-  color: #d32f2f;
+  color: #d32f2f; /* Red for Unavailable Times */
+  font-weight: 700;
 }
 
 .unavailable-times ul {
@@ -58,39 +65,44 @@
 }
 
 .unavailable-times li {
-  background-color: #ffcdd2;
+  background-color: #ffcdd2; /* Light Red Background */
   padding: 8px;
   margin-bottom: 5px;
   border-radius: 4px;
 }
 
+/* Reserve Button */
 .btn-reserve {
   width: 100%;
   padding: 12px;
-  background-color: #2e7d32;
+  background-color: #1e88e5; /* Blue Background */
   border: none;
   color: white;
   font-size: 16px;
+  font-weight: 600;
   border-radius: 4px;
   cursor: pointer;
-  margin-bottom: 10px;
+  transition: background-color 0.3s ease;
 }
 
 .btn-reserve:hover {
-  background-color: #256f2a;
+  background-color: #1565c0; /* Darker Blue on Hover */
 }
 
+/* Cancel Button */
 .btn-cancel {
   width: 100%;
   padding: 12px;
-  background-color: #bdbdbd;
+  background-color: #e53935; /* Red Background */
   border: none;
   color: white;
   font-size: 16px;
+  font-weight: 600;
   border-radius: 4px;
   cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
 .btn-cancel:hover {
-  background-color: #9e9e9e;
+  background-color: #c62828; /* Darker Red on Hover */
 }

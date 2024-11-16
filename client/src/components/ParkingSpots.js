@@ -34,9 +34,7 @@ function ParkingSpots({ parkingSpots, handleSpotClick }) {
             >
               <div>
                 <div className="spot-id">{`Spot ${spot.spotID}`}</div>
-                <div className="spot-status">
-                  {`${Math.round(fullnessPercentage)}% Reserved`}
-                </div>
+                
               </div>
             </div>
           );
