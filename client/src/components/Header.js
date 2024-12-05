@@ -101,7 +101,7 @@ function Header({
                         <th>Spot #</th>
                         <th>Date</th>
                         <th>Time</th>
-                        <th>Action</th>
+                        <th>Cancel</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -156,7 +156,7 @@ function Header({
                           <th>Make</th>
                           <th>Model</th>
                           <th>License Plate</th>
-                          <th>Action</th>
+                          <th>Delete</th>
                         </tr>
                       </thead>
                       <tbody>

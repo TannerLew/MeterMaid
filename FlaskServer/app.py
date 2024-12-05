@@ -302,23 +302,16 @@ def delete_car(carID):
     car = Cars.query.get(carID)
     if not car:
         return jsonify({'message': 'Car not found'}), 404
-
-    # Find related reservations
-    reservations = Reservations.query.filter_by(carID=carID).all()
-
     try:
-        # Delete all related reservations
-        for reservation in reservations:
-            db.session.delete(reservation)
-
-        # Delete the car itself
+        
+        
         db.session.delete(car)
         db.session.commit()
 
         return jsonify({'message': 'Car and related reservations deleted successfully'}), 200
     except Exception as e:
         db.session.rollback()
-        return jsonify({'message': f'Error deleting car and reservations: {str(e)}'}), 500
+        return jsonify({'message': f'Error deleting car: {str(e)}'}), 500
 
 
 if __name__ == '__main__':
