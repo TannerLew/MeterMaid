@@ -1,13 +1,24 @@
+import os
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from models import db, Users, ParkingSpots, Reservations, Cars
 from datetime import datetime
-import hashlib
+from werkzeug.security import generate_password_hash, check_password_hash
+from dotenv import load_dotenv
+
+load_dotenv('dbcontext.env')
+
 
 app = Flask(__name__)
 CORS(app)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:Tanner1121@localhost/ParkingLotDB'
+# Use environment variables for DB credentials
+db_user = os.environ.get('DB_USER', 'root')
+db_password = os.environ.get('DB_PASSWORD', 'password')
+db_host = os.environ.get('DB_HOST', 'localhost')
+db_name = os.environ.get('DB_NAME', 'ParkingLotDB')
+
+app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://{db_user}:{db_password}@{db_host}/{db_name}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
@@ -24,14 +35,23 @@ def add_user():
     mNumber = data.get('mNumber')
     password = data.get('password')
 
+    # Validate input
     if not all([firstName, lastName, mNumber, password]):
         return jsonify({'message': 'Missing data'}), 400
 
+    # Check if mNumber already exists
     if Users.query.filter_by(mNumber=mNumber).first():
         return jsonify({'message': 'M Number already exists'}), 400
 
-    hashed_password = hashlib.sha256(password.encode()).hexdigest()
-    new_user = Users(firstName=firstName, lastName=lastName, mNumber=mNumber, password=hashed_password)
+    # Securely hash the password using Werkzeug’s generate_password_hash
+    hashed_password = generate_password_hash(password)
+
+    new_user = Users(
+        firstName=firstName,
+        lastName=lastName,
+        mNumber=mNumber,
+        password=hashed_password
+    )
     db.session.add(new_user)
     db.session.commit()
 
@@ -44,6 +64,7 @@ def login():
     mNumber = data.get('mNumber')
     password = data.get('password')
 
+    # Validate input
     if not all([mNumber, password]):
         return jsonify({'message': 'Missing data'}), 400
 
@@ -51,19 +72,22 @@ def login():
     if not user:
         return jsonify({'message': 'User not found'}), 404
 
-    hashed_password = hashlib.sha256(password.encode()).hexdigest()
-    if hashed_password != user.password:
+    # Check the hashed password using check_password_hash
+    if not check_password_hash(user.password, password):
         return jsonify({'message': 'Incorrect password'}), 401
 
+    # On successful login, you may want to issue a session token/JWT here.
+    # For now, just return user info.
     return jsonify({
         'message': 'Login successful',
         'userID': user.userID,
         'firstName': user.firstName
     }), 200
 
-# User logout
+# User logout (currently just a placeholder)
 @app.route('/logout', methods=['POST'])
 def logout():
+    # If using session tokens or JWTs, invalidate the token here.
     return jsonify({'message': 'Logged out successfully'}), 200
 
 # Cancel a reservation
